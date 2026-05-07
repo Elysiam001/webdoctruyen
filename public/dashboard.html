@@ -480,6 +480,36 @@
     </div>
 
     <script>
+        // Load real user data from localStorage
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (!userData) {
+            window.location.href = 'index.html'; // Redirect if not logged in
+        } else {
+            // Update UI with real data
+            document.getElementById('display-name').textContent = userData.username;
+            const profileAvatar = document.getElementById('profile-avatar');
+            const navAvatar = document.getElementById('user-avatar');
+            
+            if (userData.avatar) {
+                profileAvatar.innerHTML = "";
+                profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+                profileAvatar.style.backgroundColor = "transparent";
+                navAvatar.innerHTML = "";
+                navAvatar.style.backgroundImage = `url('${userData.avatar}')`;
+                navAvatar.style.backgroundSize = "cover";
+                navAvatar.style.backgroundColor = "transparent";
+            } else {
+                profileAvatar.innerHTML = userData.username.charAt(0).toUpperCase();
+                navAvatar.innerHTML = userData.username.charAt(0).toUpperCase();
+            }
+
+            // Update stats
+            document.querySelectorAll('.mini-stat div:last-child')[0].textContent = new Date(userData.createdAt).toLocaleDateString('vi-VN');
+            document.querySelectorAll('.mini-stat div:last-child')[1].textContent = `${userData.readChapters} Chương`;
+            document.querySelectorAll('.mini-stat div:last-child')[2].textContent = `${userData.readMinutes} Phút`;
+            document.querySelectorAll('.mini-stat div:last-child')[3].textContent = `${userData.comments} Lần`;
+        }
+
         // Simple interactivity for category buttons
         const catBtns = document.querySelectorAll('.cat-btn');
         catBtns.forEach(btn => {

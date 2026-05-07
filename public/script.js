@@ -71,30 +71,70 @@ document.addEventListener('DOMContentLoaded', () => {
         if (alertCallback) alertCallback();
     });
 
-    // Form submission effect
-    const handleFormSubmit = (form, successMsg, btnText) => {
-        form.addEventListener('submit', (e) => {
+    // Form submission (Real API)
+    const handleFormSubmit = (form, apiPath, successMsg) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = form.querySelector('.btn-login');
             const originalHTML = btn.innerHTML;
+            
+            // Get form data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
             btn.innerHTML = 'ĐANG XỬ LÝ...';
             btn.style.opacity = '0.7';
             btn.style.pointerEvents = 'none';
 
-            setTimeout(() => {
-                showAlert(successMsg, () => {
-                    // Chuyển hướng sang trang Dashboard nội bộ
-                    window.location.href = 'dashboard.html'; 
+            try {
+                const response = await fetch(apiPath, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
-            }, 2000);
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    if (apiPath === '/api/login') {
+                        // Save user info to localStorage
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        localStorage.setItem('token', result.token);
+                    }
+                    
+                    showAlert(successMsg || result.message, () => {
+                        if (apiPath === '/api/login') {
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            // After register or forgot, switch to login
+                            loginForm.style.display = 'block';
+                            registerForm.style.display = 'none';
+                            forgotForm.style.display = 'none';
+                            btn.innerHTML = originalHTML;
+                            btn.style.opacity = '1';
+                            btn.style.pointerEvents = 'all';
+                        }
+                    });
+                } else {
+                    showAlert(result.message || 'Có lỗi xảy ra!');
+                    btn.innerHTML = originalHTML;
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'all';
+                }
+            } catch (err) {
+                showAlert('Không thể kết nối tới máy chủ!');
+                btn.innerHTML = originalHTML;
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'all';
+            }
         });
     };
 
-    handleFormSubmit(loginForm, 'Kết nối siêu liên kết đã được thiết lập. Chào mừng trở lại, Quản trị viên.', 'ĐĂNG NHẬP');
-    handleFormSubmit(registerForm, 'Danh tính mới đã được khởi tạo thành công trên Talos.', 'ĐĂNG KÝ NGAY');
-    handleFormSubmit(forgotForm, 'Mật khẩu của bạn đã được thay đổi thành công. Hãy thử đăng nhập lại.', 'ĐẶT LẠI MẬT KHẨU');
+    handleFormSubmit(loginForm, '/api/login', 'Kết nối thành công! Đang chuyển hướng tới Talos Hub...');
+    handleFormSubmit(registerForm, '/api/register', 'Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.');
+    handleFormSubmit(forgotForm, '/api/reset-password', 'Yêu cầu đã được gửi. Vui lòng kiểm tra email.');
 
-    // Email code sending simulation
+    // Email code sending (Still simulated for now, or you can add API)
     const setupEmailCode = (btnId, emailId) => {
         const btn = document.getElementById(btnId);
         const email = document.getElementById(emailId);
