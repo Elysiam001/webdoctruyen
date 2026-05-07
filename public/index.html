@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endfield Talos | Hyperlink Connection</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Floating Particles -->
+        <div class="particles" id="particles-container"></div>
+
+        <!-- Brand Header -->
+        <div class="brand-section">
+            <div class="brand-logo">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 10px;">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>ENDFIELD</h1>
+            </div>
+            <div class="brand-tag">TALOS // KẾT NỐI SIÊU LIÊN KẾT</div>
+        </div>
+
+        <!-- Utility Icons -->
+        <div class="header-utils">
+            <i class="fa-solid fa-globe util-icon"></i>
+            <i class="fa-solid fa-gear util-icon"></i>
+            <i class="fa-solid fa-network-wired util-icon"></i>
+        </div>
+
+        <!-- Sidebar Vertical Text -->
+        <div class="sidebar-info">
+            <div class="vertical-text">CÔNG NGHIỆP</div>
+            <div class="vertical-text">THĂM DÒ</div>
+            <div class="vertical-text">PHÒNG THỦ</div>
+        </div>
+
+        <!-- Character Info -->
+        <div class="char-info">
+            <div class="char-card">
+                <div class="char-name">CHEN QIANYU</div>
+                <div class="char-title">• ENDFIELD TALOS</div>
+            </div>
+            <div class="char-quote">
+                "Chúng ta sẽ ở trên mảnh đất này<br>tìm thấy câu trả lời thuộc về mình."
+            </div>
+            <div class="char-signature">Chen Qianyu</div>
+        </div>
+
+        <!-- Login Container -->
+        <div class="login-container">
+            <div class="scan-line"></div>
+            <div class="tabs">
+                <div class="tab active" id="tab-login">ĐĂNG NHẬP</div>
+                <div class="tab" id="tab-register">ĐĂNG KÝ</div>
+            </div>
+            <div class="welcome-msg">// CHÀO MỪNG TRỞ LẠI, QUẢN TRỊ VIÊN</div>
+
+            <div class="forms-container">
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="label">Email / Tên đăng nhập</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" placeholder="Nhập email hoặc tên đăng nhập" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" class="password-input" placeholder="Nhập mật khẩu" required>
+                            <i class="fa-solid fa-eye-slash toggle-password" style="cursor: pointer;"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox"> Ghi nhớ đăng nhập
+                        </label>
+                        <a href="#" class="forgot-pwd" id="link-forgot-pwd">Quên mật khẩu?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        ĐĂNG NHẬP <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </form>
+
+                <!-- Forgot Password Form -->
+                <form id="forgot-form" style="display: none;">
+                    <div class="form-group">
+                        <label class="label">Địa chỉ Gmail</label>
+                        <div class="email-wrapper" style="display: flex; gap: 10px;">
+                            <div class="input-wrapper" style="flex: 1;">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" id="forgot-email" placeholder="Nhập mail đã đăng ký" required>
+                            </div>
+                            <button type="button" id="send-forgot-btn" class="social-btn" style="width: auto; padding: 0 15px; font-size: 0.7rem; font-family: 'Orbitron', sans-serif; white-space: nowrap; color: var(--primary-cyan);">GỬI MÃ</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mã xác nhận</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="text" placeholder="Nhập mã xác nhận" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mật khẩu mới</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" class="password-input" placeholder="Tạo mật khẩu mới" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Nhập lại mật khẩu mới</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-shield-check"></i>
+                            <input type="password" class="password-input" placeholder="Xác nhận mật khẩu mới" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        ĐẶT LẠI MẬT KHẨU <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <a href="#" id="back-to-login" class="forgot-pwd" style="font-size: 0.75rem;">Quay lại Đăng nhập</a>
+                    </div>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" style="display: none;">
+                    <div class="form-group">
+                        <label class="label">Tên đăng nhập</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" placeholder="Tạo tên đăng nhập của bạn" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Địa chỉ Gmail</label>
+                        <div class="email-wrapper" style="display: flex; gap: 10px;">
+                            <div class="input-wrapper" style="flex: 1;">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" id="register-email" placeholder="Ví dụ: name@gmail.com" required>
+                            </div>
+                            <button type="button" id="send-code-btn" class="social-btn" style="width: auto; padding: 0 15px; font-size: 0.7rem; font-family: 'Orbitron', sans-serif; white-space: nowrap; color: var(--primary-cyan);">GỬI MÃ</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mã xác nhận Gmail</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="text" placeholder="Nhập mã 6 số đã gửi tới mail" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" class="password-input" placeholder="Tạo mật khẩu mạnh" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Nhập lại mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-shield-check"></i>
+                            <input type="password" class="password-input" placeholder="Xác nhận lại mật khẩu" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Mã Captcha</label>
+                        <div class="captcha-wrapper" style="display: flex; gap: 10px;">
+                            <div class="input-wrapper" style="flex: 1;">
+                                <input type="text" placeholder="Nhập mã" required>
+                            </div>
+                            <div id="captcha-display" class="captcha-img" style="cursor: pointer;" title="Bấm để đổi mã khác">
+                                X7B2
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        ĐĂNG KÝ NGAY <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="separator">HOẶC</div>
+
+            <div class="social-login">
+                <div class="social-btn">
+                    <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.5rem;"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fa-brands fa-discord" style="color: #5865F2; font-size: 1.5rem;"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fa-solid fa-shield-halved" style="color: #fff; font-size: 1.5rem;"></i>
+                </div>
+            </div>
+
+            <div class="footer-text">
+                TRONG THẾ GIỚI CỦA NHỮNG CÁNH ĐỒNG VÔ TẬN,<br>CHÚNG TA CÙNG XÂY DỰNG TƯƠNG LAI.
+            </div>
+
+            <div class="brand-footer">
+                ENDFIELD <span>||||||||||</span>
+            </div>
+        </div>
+
+        <div class="decoration-line"></div>
+        <div class="copyright">© 2024 ENDFIELD INDUSTRIES. ALL RIGHTS RESERVED.</div>
+
+        <!-- Custom Notification Modal -->
+        <div id="custom-alert" class="alert-overlay" style="display: none;">
+            <div class="alert-box">
+                <div class="tech-corner tc-tl"></div>
+                <div class="tech-corner tc-br"></div>
+                <div class="alert-header">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 
+                    <span>THÔNG BÁO HỆ THỐNG</span>
+                </div>
+                <div class="alert-content" id="alert-message">
+                    Thông báo mặc định.
+                </div>
+                <div class="alert-footer">
+                    <button class="alert-btn" id="close-alert">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

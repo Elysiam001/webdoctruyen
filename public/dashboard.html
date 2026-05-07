@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TALOS LIBRARY | Kho Truyện Quản Trị Viên</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: url('dashboard_bg.png') no-repeat center center/cover fixed;
+            display: block;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: auto;
+        }
+        
+        .navbar {
+            background: rgba(10, 18, 30, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-cyan);
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            width: 100%;
+            outline: none;
+        }
+
+        .container {
+            padding: 40px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-cyan);
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary-cyan), transparent);
+        }
+
+        .novel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .novel-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .novel-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-cyan);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.2);
+        }
+
+        .novel-cover {
+            width: 100%;
+            height: 280px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .novel-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary-cyan);
+            color: #000;
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            font-weight: 900;
+            border-radius: 2px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .novel-info {
+            padding: 15px;
+        }
+
+        .novel-title {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 40px;
+        }
+
+        .novel-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .category-list {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .cat-btn {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background: var(--primary-cyan);
+            color: #000;
+            border-color: var(--primary-cyan);
+        }
+
+        /* Hero Slider Placeholder */
+        .hero-banner {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(45deg, rgba(0, 102, 255, 0.2), rgba(255, 0, 255, 0.2)), url('dashboard_bg.png');
+            background-size: cover;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+        }
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 200px;
+            background: rgba(10, 18, 30, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            display: none;
+            flex-direction: column;
+            padding: 10px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            animation: dropdownFade 0.3s ease;
+        }
+
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-dropdown a {
+            padding: 10px 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s;
+        }
+
+        .user-dropdown a i {
+            width: 20px;
+            font-size: 0.9rem;
+            color: var(--primary-cyan);
+        }
+
+        .user-dropdown a:hover {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary-cyan);
+        }
+
+        /* Profile Modal Stats */
+        .mini-stat {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .profile-stat-item {
+            background: rgba(0, 242, 255, 0.05);
+            padding: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 242, 255, 0.1);
+        }
+        .lib-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: cover;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .lib-avatar:hover {
+            border-color: var(--primary-cyan);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">TALOS_READ</div>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--primary-cyan);"></i>
+            <input type="text" placeholder="Tìm kiếm truyện, tác giả...">
+        </div>
+        <div style="display: flex; gap: 20px; align-items: center; position: relative;">
+            <i class="fa-solid fa-bell" style="color: #fff; cursor: pointer;"></i>
+            <div id="user-avatar" style="width: 35px; height: 35px; border-radius: 50%; background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; position: relative; transition: 0.3s;">
+                A
+            </div>
+            <!-- User Dropdown Menu -->
+            <div id="user-dropdown" class="user-dropdown">
+                <a href="#"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
+                <a href="#"><i class="fa-solid fa-gear"></i> Cài đặt</a>
+                <a href="#"><i class="fa-solid fa-bolt"></i> Thể lực</a>
+                <a href="index.html" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                <a href="#" style="color: #ff4d4d;"><i class="fa-solid fa-heart"></i> Donate</a>
+                <a href="#"><i class="fa-solid fa-bookmark"></i> Truyện đánh dấu</a>
+                <a href="#"><i class="fa-solid fa-history"></i> Truyện đã đọc</a>
+                <a href="#"><i class="fa-solid fa-eye"></i> Truyện theo dõi</a>
+                <a href="#" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;"><i class="fa-solid fa-book-open"></i> Truyện tôi thầu</a>
+                <a href="#" style="color: #ff4d4d; font-weight: bold;"><i class="fa-solid fa-pen-nib"></i> Đăng truyện</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Profile Modal -->
+    <div id="profile-modal" class="alert-overlay" style="display: none;">
+        <div class="alert-box" style="width: 600px; text-align: left; clip-path: none; border-radius: 8px;">
+            <div class="tech-corner tc-tl"></div>
+            <div class="tech-corner tc-br"></div>
+            <div class="alert-header">
+                <i class="fa-solid fa-user-gear"></i> 
+                <span>HỒ SƠ QUẢN TRỊ VIÊN</span>
+            </div>
+            <div class="alert-content" style="display: flex; gap: 30px; padding: 30px; flex-wrap: wrap;">
+                <!-- Avatar & Basic Info -->
+                <div style="text-align: center; flex: 1; min-width: 150px;">
+                    <div id="profile-avatar-container" style="position: relative; width: 120px; height: 120px; margin: 0 auto 15px; cursor: pointer;">
+                        <div id="profile-avatar" style="width: 100%; height: 100%; border-radius: 50%; background-color: var(--primary-cyan); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: bold; color: #000; box-shadow: 0 0 20px var(--primary-cyan); overflow: hidden; transition: 0.3s;">
+                            A
+                        </div>
+                        <div style="position: absolute; bottom: 0; right: 0; background: #fff; color: #000; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 2px solid var(--bg-dark);"><i class="fa-solid fa-camera"></i></div>
+                        <input type="file" id="avatar-upload" style="display: none;" accept="image/*">
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 5px;">
+                        <span id="display-name" style="font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: #fff;">ADMIN_TALOS</span>
+                        <i class="fa-solid fa-pen-to-square" id="edit-name-btn" style="color: var(--primary-cyan); cursor: pointer; font-size: 0.9rem;"></i>
+                    </div>
+                    <div id="name-edit-box" style="display: none; margin-bottom: 10px;">
+                        <input type="text" id="name-input" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary-cyan); color: #fff; padding: 5px; width: 120px; border-radius: 4px; outline: none;">
+                        <button id="save-name-btn" style="background: var(--primary-cyan); border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">LƯU</button>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--primary-cyan); letter-spacing: 2px;">CẤP BẬC: TỐI CAO</div>
+                </div>
+                
+                <!-- Stats -->
+                <div style="flex: 2; min-width: 300px;">
+                    <div class="profile-stat-item">
+                        <span class="info-label">Tu Vi:</span>
+                        <span style="color: #ffaa00; font-weight: bold; font-family: 'Orbitron', sans-serif;">Đại Độ Kiếp (Tầng 9)</span>
+                        <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 85%; height: 100%; background: linear-gradient(90deg, #ffaa00, #fff); box-shadow: 0 0 10px #ffaa00;"></div>
+                        </div>
+                        <div style="font-size: 0.6rem; color: var(--text-muted); text-align: right; margin-top: 5px;">85% tới Cực Hạn</div>
+                    </div>
+                    
+                    <!-- Avatar Library -->
+                    <div style="margin-top: 20px;">
+                        <div class="info-label" style="margin-bottom: 10px;">Thư viện Avatar:</div>
+                        <div style="display: flex; gap: 10px;">
+                            <div class="lib-avatar" data-src="av1.png" style="background-image: url('av1.png');"></div>
+                            <div class="lib-avatar" data-src="av2.png" style="background-image: url('av2.png');"></div>
+                            <div class="lib-avatar" style="background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 0.8rem;">A</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
+                        <div class="mini-stat">
+                            <div class="info-label">Khai Sinh</div>
+                            <div style="color: #fff; font-size: 0.9rem;">07/05/2024</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="info-label">Đã Đọc</div>
+                            <div style="color: #fff; font-size: 0.9rem;">1,250 Chương</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="info-label">Thời Gian</div>
+                            <div style="color: #fff; font-size: 0.9rem;">4,320 Phút</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="info-label">Bình Luận</div>
+                            <div style="color: #fff; font-size: 0.9rem;">156 Lần</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="alert-footer">
+                <button class="alert-btn" id="close-profile">ĐÓNG HỒ SƠ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero-banner">
+            <div class="hero-text">
+                <div style="color: var(--primary-cyan); font-family: 'Orbitron', sans-serif; letter-spacing: 5px;">THƯ VIỆN ĐẶC QUYỀN</div>
+                <h1>HÀNH TRÌNH TỚI VÔ TẬN</h1>
+                <p style="color: rgba(255,255,255,0.7); max-width: 500px;">Khám phá những câu chuyện huyền thoại từ khắp các tinh hệ. Kho tàng tri thức dành riêng cho Quản trị viên Talos.</p>
+                <button class="alert-btn" style="margin-top: 20px;">ĐỌC NGAY</button>
+            </div>
+        </div>
+
+        <div class="section-title">THỂ LOẠI</div>
+        <div class="category-list">
+            <div class="cat-btn active">Tất cả</div>
+            <div class="cat-btn">Tiên Hiệp</div>
+            <div class="cat-btn">Kiếm Hiệp</div>
+            <div class="cat-btn">Đô Thị</div>
+            <div class="cat-btn">Khoa Huyễn</div>
+            <div class="cat-btn">Huyền Huyễn</div>
+            <div class="cat-btn">Võng Du</div>
+        </div>
+
+        <div class="section-title">TRUYỆN MỚI CẬP NHẬT</div>
+        <div class="novel-grid">
+            <!-- Novel 1 -->
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover1.png');">
+                    <div class="novel-badge">NEW</div>
+                </div>
+                <div class="novel-info">
+                    <div class="novel-title">Hành Trình Xuyên Qua Tinh Hệ Endfield</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 125 Chương</span>
+                        <span style="color: var(--primary-cyan);">Full</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Novel 2 -->
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover2.png');">
+                    <div class="novel-badge">HOT</div>
+                </div>
+                <div class="novel-info">
+                    <div class="novel-title">Kẻ Độc Hành Trên Sa Mạc Talos</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 89 Chương</span>
+                        <span>Dịch</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Repetition for grid feel -->
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover1.png'); filter: hue-rotate(90deg);"></div>
+                <div class="novel-info">
+                    <div class="novel-title">Bí Mật Của Những Cổ Vật Tiền Sử</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 450 Chương</span>
+                        <span style="color: var(--primary-cyan);">Full</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover2.png'); filter: contrast(1.5);"></div>
+                <div class="novel-info">
+                    <div class="novel-title">Đội Cứu Hộ Endfield: Nhiệm Vụ Cuối Cùng</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 32 Chương</span>
+                        <span>Convert</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover1.png'); filter: brightness(0.7);"></div>
+                <div class="novel-info">
+                    <div class="novel-title">Sức Mạnh Của Nguồn Năng Lượng Gốc</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 210 Chương</span>
+                        <span>Full</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">TRUYỆN ĐANG HOT</div>
+        <div class="novel-grid">
+            <!-- Novel 1 -->
+            <div class="novel-card">
+                <div class="novel-cover" style="background-image: url('cover2.png'); filter: saturate(2);"></div>
+                <div class="novel-info">
+                    <div class="novel-title">Linh Khí Khôi Phục: Ta Có Hệ Thống Endfield</div>
+                    <div class="novel-meta">
+                        <span><i class="fa-solid fa-list"></i> 1500 Chương</span>
+                        <span style="color: var(--primary-cyan);">Hot</span>
+                    </div>
+                </div>
+            </div>
+            <!-- More cards can be added here -->
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border);">
+        <div class="nav-logo" style="font-size: 1rem; margin-bottom: 10px;">TALOS_LIBRARY</div>
+        <p style="font-size: 0.7rem; color: var(--text-muted);">© 2024 ENDFIELD INDUSTRIES. NỀN TẢNG ĐỌC TRUYỆN DÀNH CHO QUẢN TRỊ VIÊN.</p>
+    </div>
+
+    <script>
+        // Simple interactivity for category buttons
+        const catBtns = document.querySelectorAll('.cat-btn');
+        catBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                catBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Click on novel card simulation
+        const cards = document.querySelectorAll('.novel-card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.novel-title').textContent;
+                alert(`Đang mở truyện: ${title}\n(Tính năng đọc chương đang được cập nhật...)`);
+            });
+        });
+
+        // User Dropdown Toggle
+        const avatar = document.getElementById('user-avatar');
+        const dropdown = document.getElementById('user-dropdown');
+        const profileModal = document.getElementById('profile-modal');
+        const closeProfile = document.getElementById('close-profile');
+
+        if (avatar && dropdown) {
+            avatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isVisible = dropdown.style.display === 'flex';
+                dropdown.style.display = isVisible ? 'none' : 'flex';
+            });
+
+            // Open Profile Modal
+            const openProfileLink = dropdown.querySelector('a:first-child');
+            openProfileLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                profileModal.style.display = 'flex';
+                dropdown.style.display = 'none';
+            });
+
+            closeProfile.addEventListener('click', () => {
+                profileModal.style.display = 'none';
+            });
+
+            document.addEventListener('click', () => {
+                dropdown.style.display = 'none';
+            });
+
+            // Name Editing
+            const editNameBtn = document.getElementById('edit-name-btn');
+            const nameEditBox = document.getElementById('name-edit-box');
+            const displayName = document.getElementById('display-name');
+            const nameInput = document.getElementById('name-input');
+            const saveNameBtn = document.getElementById('save-name-btn');
+
+            editNameBtn.addEventListener('click', () => {
+                nameEditBox.style.display = 'block';
+                nameInput.value = displayName.textContent;
+                displayName.style.display = 'none';
+                editNameBtn.style.display = 'none';
+            });
+
+            saveNameBtn.addEventListener('click', () => {
+                if (nameInput.value.trim() !== "") {
+                    displayName.textContent = nameInput.value;
+                }
+                nameEditBox.style.display = 'none';
+                displayName.style.display = 'inline';
+                editNameBtn.style.display = 'inline';
+            });
+
+            // Avatar Handling
+            const profileAvatar = document.getElementById('profile-avatar');
+            const navAvatar = document.getElementById('user-avatar');
+            const avatarContainer = document.getElementById('profile-avatar-container');
+            const avatarUpload = document.getElementById('avatar-upload');
+            const libAvatars = document.querySelectorAll('.lib-avatar');
+
+            // From Library
+            libAvatars.forEach(av => {
+                av.addEventListener('click', () => {
+                    const src = av.getAttribute('data-src');
+                    if (src) {
+                        profileAvatar.innerHTML = "";
+                        profileAvatar.style.backgroundImage = `url('${src}')`;
+                        profileAvatar.style.backgroundColor = "transparent";
+                        
+                        navAvatar.innerHTML = "";
+                        navAvatar.style.backgroundImage = `url('${src}')`;
+                        navAvatar.style.backgroundSize = "cover";
+                        navAvatar.style.backgroundColor = "transparent";
+                    } else {
+                        // Default 'A'
+                        profileAvatar.style.backgroundImage = "none";
+                        profileAvatar.style.backgroundColor = "var(--primary-cyan)";
+                        profileAvatar.innerHTML = "A";
+                        
+                        navAvatar.style.backgroundImage = "none";
+                        navAvatar.style.backgroundColor = "var(--primary-cyan)";
+                        navAvatar.innerHTML = "A";
+                    }
+                });
+            });
+
+            // From File
+            avatarContainer.addEventListener('click', () => avatarUpload.click());
+            avatarUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const url = event.target.result;
+                        profileAvatar.innerHTML = "";
+                        profileAvatar.style.backgroundImage = `url('${url}')`;
+                        profileAvatar.style.backgroundColor = "transparent";
+                        
+                        navAvatar.innerHTML = "";
+                        navAvatar.style.backgroundImage = `url('${url}')`;
+                        navAvatar.style.backgroundSize = "cover";
+                        navAvatar.style.backgroundColor = "transparent";
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
