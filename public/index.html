@@ -67,7 +67,7 @@
                         <label class="label">Email / Tên đăng nhập</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-user"></i>
-                            <input type="text" placeholder="Nhập email hoặc tên đăng nhập" required>
+                            <input type="text" name="email" placeholder="Nhập email hoặc tên đăng nhập" required>
                         </div>
                     </div>
 
@@ -75,7 +75,7 @@
                         <label class="label">Mật khẩu</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" class="password-input" placeholder="Nhập mật khẩu" required>
+                            <input type="password" name="password" class="password-input" placeholder="Nhập mật khẩu" required>
                             <i class="fa-solid fa-eye-slash toggle-password" style="cursor: pointer;"></i>
                         </div>
                     </div>
@@ -144,7 +144,7 @@
                         <label class="label">Tên đăng nhập</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-user"></i>
-                            <input type="text" placeholder="Tạo tên đăng nhập của bạn" required>
+                            <input type="text" name="username" placeholder="Tạo tên đăng nhập của bạn" required>
                         </div>
                     </div>
 
@@ -153,7 +153,7 @@
                         <div class="email-wrapper" style="display: flex; gap: 10px;">
                             <div class="input-wrapper" style="flex: 1;">
                                 <i class="fa-solid fa-envelope"></i>
-                                <input type="email" id="register-email" placeholder="Ví dụ: name@gmail.com" required>
+                                <input type="email" name="email" id="register-email" placeholder="Ví dụ: name@gmail.com" required>
                             </div>
                             <button type="button" id="send-code-btn" class="social-btn" style="width: auto; padding: 0 15px; font-size: 0.7rem; font-family: 'Orbitron', sans-serif; white-space: nowrap; color: var(--primary-cyan);">GỬI MÃ</button>
                         </div>
@@ -163,7 +163,7 @@
                         <label class="label">Mã xác nhận Gmail</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-key"></i>
-                            <input type="text" placeholder="Nhập mã 6 số đã gửi tới mail" required>
+                            <input type="text" name="code" placeholder="Nhập mã 6 số đã gửi tới mail" required>
                         </div>
                     </div>
 
@@ -171,7 +171,7 @@
                         <label class="label">Mật khẩu</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="password" class="password-input" placeholder="Tạo mật khẩu mạnh" required>
+                            <input type="password" name="password" class="password-input" placeholder="Tạo mật khẩu mạnh" required>
                         </div>
                     </div>
 
@@ -179,7 +179,7 @@
                         <label class="label">Nhập lại mật khẩu</label>
                         <div class="input-wrapper">
                             <i class="fa-solid fa-shield-check"></i>
-                            <input type="password" class="password-input" placeholder="Xác nhận lại mật khẩu" required>
+                            <input type="password" name="confirm_password" class="password-input" placeholder="Xác nhận lại mật khẩu" required>
                         </div>
                     </div>
 
@@ -187,7 +187,7 @@
                         <label class="label">Mã Captcha</label>
                         <div class="captcha-wrapper" style="display: flex; gap: 10px;">
                             <div class="input-wrapper" style="flex: 1;">
-                                <input type="text" placeholder="Nhập mã" required>
+                                <input type="text" name="captcha" placeholder="Nhập mã" required>
                             </div>
                             <div id="captcha-display" class="captcha-img" style="cursor: pointer;" title="Bấm để đổi mã khác">
                                 X7B2
