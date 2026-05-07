@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (alertCallback) alertCallback();
     });
 
+    let currentVerificationCode = null;
+
     // Form submission (Real API)
     const handleFormSubmit = (form, apiPath, successMsg) => {
         form.addEventListener('submit', async (e) => {
@@ -81,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get form data
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
+
+            // Verify Code for Registration
+            if (apiPath === '/api/register') {
+                const userCode = form.querySelector('input[name="code"]')?.value;
+                if (!currentVerificationCode || userCode !== currentVerificationCode) {
+                    showAlert('Mã xác nhận không chính xác hoặc đã hết hạn!');
+                    return;
+                }
+            }
 
             btn.innerHTML = 'ĐANG XỬ LÝ...';
             btn.style.opacity = '0.7';
@@ -113,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             btn.innerHTML = originalHTML;
                             btn.style.opacity = '1';
                             btn.style.pointerEvents = 'all';
+                            currentVerificationCode = null; // Reset code
                         }
                     });
                 } else {
@@ -134,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     handleFormSubmit(registerForm, '/api/register', 'Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.');
     handleFormSubmit(forgotForm, '/api/reset-password', 'Yêu cầu đã được gửi. Vui lòng kiểm tra email.');
 
-    // Email code sending (Still simulated for now, or you can add API)
+    // Email code sending (Simulated with random code generation)
     const setupEmailCode = (btnId, emailId) => {
         const btn = document.getElementById(btnId);
         const email = document.getElementById(emailId);
@@ -144,11 +156,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     showAlert('Vui lòng nhập địa chỉ Gmail hợp lệ.');
                     return;
                 }
+                
+                // Generate a random 6-digit code
+                currentVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+                
                 btn.disabled = true;
                 btn.style.opacity = '0.5';
                 let countdown = 60;
                 btn.textContent = `${countdown}S`;
-                showAlert(`Mã xác nhận đã được gửi tới: ${email.value}`);
+                
+                showAlert(`MÃ XÁC NHẬN CỦA BẠN LÀ: ${currentVerificationCode}\n(Hãy nhập mã này vào ô xác nhận để đăng ký)`);
+                
                 const timer = setInterval(() => {
                     countdown--;
                     btn.textContent = `${countdown}S`;
