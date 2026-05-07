@@ -39,11 +39,12 @@ const User = mongoose.model('User', userSchema);
 // Register
 app.post('/api/register', async (req, res) => {
     try {
-        const { email, username, password } = req.body;
+        let { email, username, password } = req.body;
+        email = email.toLowerCase();
         
         // Check if user exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ message: 'Email đã được đăng ký!' });
+        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+        if (existingUser) return res.status(400).json({ message: 'Email hoặc Tên đăng nhập đã tồn tại!' });
 
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -64,10 +65,11 @@ app.post('/api/register', async (req, res) => {
 // Login
 app.post('/api/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body; // 'email' here could be username or email
+        const loginQuery = email.includes('@') ? { email: email.toLowerCase() } : { username: email };
         
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Tài khoản không tồn tại!' });
+        const user = await User.findOne(loginQuery);
+        if (!user) return res.status(400).json({ message: 'Tài khoản hoặc Email không tồn tại!' });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Mật khẩu không chính xác!' });
