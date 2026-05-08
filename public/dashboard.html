@@ -334,16 +334,6 @@
                         </div>
                         <div style="font-size: 0.6rem; color: var(--text-muted); text-align: right; margin-top: 5px;">85% tới Cực Hạn</div>
                     </div>
-                    
-                    <!-- Avatar Library -->
-                    <div style="margin-top: 20px;">
-                        <div class="info-label" style="margin-bottom: 10px;">Thư viện Avatar:</div>
-                        <div style="display: flex; gap: 10px;">
-                            <div class="lib-avatar" data-src="av1.png" style="background-image: url('av1.png');"></div>
-                            <div class="lib-avatar" data-src="av2.png" style="background-image: url('av2.png');"></div>
-                            <div class="lib-avatar" style="background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 0.8rem;">A</div>
-                        </div>
-                    </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
                         <div class="mini-stat">
@@ -585,33 +575,6 @@
             const navAvatar = document.getElementById('user-avatar');
             const avatarContainer = document.getElementById('profile-avatar-container');
             const avatarUpload = document.getElementById('avatar-upload');
-            const libAvatars = document.querySelectorAll('.lib-avatar');
-
-            // From Library
-            libAvatars.forEach(av => {
-                av.addEventListener('click', () => {
-                    const src = av.getAttribute('data-src');
-                    if (src) {
-                        profileAvatar.innerHTML = "";
-                        profileAvatar.style.backgroundImage = `url('${src}')`;
-                        profileAvatar.style.backgroundColor = "transparent";
-                        
-                        navAvatar.innerHTML = "";
-                        navAvatar.style.backgroundImage = `url('${src}')`;
-                        navAvatar.style.backgroundSize = "cover";
-                        navAvatar.style.backgroundColor = "transparent";
-                    } else {
-                        // Default 'A'
-                        profileAvatar.style.backgroundImage = "none";
-                        profileAvatar.style.backgroundColor = "var(--primary-cyan)";
-                        profileAvatar.innerHTML = "A";
-                        
-                        navAvatar.style.backgroundImage = "none";
-                        navAvatar.style.backgroundColor = "var(--primary-cyan)";
-                        navAvatar.innerHTML = "A";
-                    }
-                });
-            });
 
             // From File
             avatarContainer.addEventListener('click', () => avatarUpload.click());
