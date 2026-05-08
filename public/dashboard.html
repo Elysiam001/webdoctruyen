@@ -647,13 +647,13 @@
                             const card = document.createElement('div');
                             card.className = 'novel-card';
                             
-                            // Check if current user is the uploader
-                            const isAuthor = userData.id === novel.uploaderId;
+                            // Check if current user is the uploader (Force string comparison)
+                            const isAuthor = String(userData.id) === String(novel.uploaderId);
                             
                             card.innerHTML = `
                                 <div class="novel-cover" style="background-image: url('${novel.cover || 'cover1.png'}');">
                                     <div class="novel-badge">${novel.category.toUpperCase()}</div>
-                                    ${isAuthor ? '<div class="author-badge" style="position: absolute; bottom: 10px; left: 10px; background: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; font-weight: bold;">TÁC GIẢ</div>' : ''}
+                                    ${isAuthor ? '<div class="author-badge" style="position: absolute; bottom: 10px; left: 10px; background: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; font-weight: bold; z-index: 10;">TÁC GIẢ</div>' : ''}
                                 </div>
                                 <div class="novel-info">
                                     <div class="novel-title">${novel.title}</div>
@@ -661,18 +661,21 @@
                                         <span><i class="fa-solid fa-user-pen"></i> ${novel.author}</span>
                                         <span style="color: var(--primary-cyan);">${novel.chapters} Chương</span>
                                     </div>
-                                    ${isAuthor ? `<button class="alert-btn add-chapter-btn" data-id="${novel._id}" style="width: 100%; margin-top: 10px; font-size: 0.7rem; padding: 5px;">THÊM CHƯƠNG</button>` : ''}
+                                    ${isAuthor ? `<button class="alert-btn add-chapter-btn" style="width: 100%; margin-top: 10px; font-size: 0.7rem; padding: 8px; background: #ff4d4d; border: none; cursor: pointer;">THÊM CHƯƠNG</button>` : ''}
                                 </div>
                             `;
 
                             // Add Chapter Button Click
                             const addBtn = card.querySelector('.add-chapter-btn');
                             if (addBtn) {
-                                addBtn.onclick = (e) => {
+                                addBtn.addEventListener('click', (e) => {
+                                    e.preventDefault();
                                     e.stopPropagation();
+                                    console.log("Opening chapter modal for:", novel.title);
                                     document.getElementById('target-novel-id').value = novel._id;
-                                    document.getElementById('post-chapter-modal').style.display = 'flex';
-                                };
+                                    const modal = document.getElementById('post-chapter-modal');
+                                    if (modal) modal.style.display = 'flex';
+                                });
                             }
 
                             card.onclick = async () => {
@@ -680,7 +683,7 @@
                                     const res = await fetch(`/api/novels/${novel._id}/chapters`);
                                     const chapters = await res.json();
                                     let chapterList = chapters.map(c => `C${c.chapterNumber}: ${c.title}`).join('\n');
-                                    alert(`Truyện: ${novel.title}\n\nDANH SÁCH CHƯƠNG:\n${chapterList || 'Chưa có chương nào.'}\n\n(Hệ thống đọc truyện đang hoàn thiện...)`);
+                                    alert(`Truyện: ${novel.title}\n\nDANH SÁCH CHƯƠNG:\n${chapterList || 'Chưa có chương nào.'}\n\n(Hệ thống đang hoàn thiện...)`);
                                 } catch (err) { alert('Không thể lấy danh sách chương'); }
                             };
                             novelList.appendChild(card);
