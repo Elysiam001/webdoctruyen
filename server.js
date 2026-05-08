@@ -202,6 +202,16 @@ app.get('/api/novels', async (req, res) => {
     }
 });
 
+// Get My Novels
+app.get('/api/my-novels/:userId', async (req, res) => {
+    try {
+        const novels = await Novel.find({ uploaderId: req.params.userId }).sort({ createdAt: -1 });
+        res.json(novels);
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách truyện của bạn!' });
+    }
+});
+
 // --- Chapter Routes ---
 
 // Post Chapter

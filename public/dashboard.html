@@ -492,6 +492,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Author Studio Modal -->
+    <div id="studio-modal" class="alert-overlay" style="display: none;">
+        <div class="alert-box" style="width: 700px; text-align: left; max-height: 80vh; overflow-y: auto;">
+            <div class="tech-corner tc-tl"></div>
+            <div class="tech-corner tc-br"></div>
+            <div class="alert-header">
+                <i class="fa-solid fa-book-atlas"></i> 
+                <span>TRẠM QUẢN LÝ TÁC GIẢ</span>
+            </div>
+            <div class="alert-content" style="padding: 20px;">
+                <div id="my-novels-list" style="display: flex; flex-direction: column; gap: 15px;">
+                    <!-- My novels will load here -->
+                    <p style="color: var(--text-muted); text-align: center;">Đang tải danh sách bản thảo...</p>
+                </div>
+            </div>
+            <div class="alert-footer">
+                <button class="alert-btn" id="close-studio-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">QUAY LẠI</button>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border);">
@@ -630,6 +651,55 @@
                     console.error('Tu luyện gián đoạn:', err);
                 }
             }, 60000);
+
+            const menuMyNovels = document.getElementById('menu-my-novels');
+            const studioModal = document.getElementById('studio-modal');
+            const closeStudioModal = document.getElementById('close-studio-modal');
+            const myNovelsList = document.getElementById('my-novels-list');
+
+            if (menuMyNovels) {
+                menuMyNovels.onclick = async (e) => {
+                    e.preventDefault();
+                    dropdown.style.display = 'none';
+                    studioModal.style.display = 'flex';
+                    
+                    // Fetch My Novels
+                    try {
+                        const res = await fetch(`/api/my-novels/${userData.id || userData._id}`);
+                        const novels = await res.json();
+                        myNovelsList.innerHTML = "";
+                        
+                        if (novels.length === 0) {
+                            myNovelsList.innerHTML = "<p style='color: var(--text-muted); text-align: center;'>Bạn chưa thầu bộ truyện nào. Hãy đăng bộ đầu tiên!</p>";
+                            return;
+                        }
+
+                        novels.forEach(novel => {
+                            const item = document.createElement('div');
+                            item.style.cssText = "background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;";
+                            item.innerHTML = `
+                                <div>
+                                    <div style="font-weight: bold; color: var(--primary-cyan); font-family: 'Orbitron', sans-serif;">${novel.title}</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">
+                                        <i class="fa-solid fa-layer-group"></i> ${novel.chapters} Chương | 
+                                        <i class="fa-solid fa-clock"></i> Cập nhật: ${new Date(novel.createdAt).toLocaleDateString('vi-VN')}
+                                    </div>
+                                </div>
+                                <button class="alert-btn add-chapter-studio" data-id="${novel._id}" style="padding: 5px 15px; font-size: 0.7rem;">+ VIẾT CHƯƠNG</button>
+                            `;
+                            
+                            item.querySelector('.add-chapter-studio').onclick = () => {
+                                document.getElementById('target-novel-id').value = novel._id;
+                                studioModal.style.display = 'none';
+                                document.getElementById('post-chapter-modal').style.display = 'flex';
+                            };
+                            
+                            myNovelsList.appendChild(item);
+                        });
+                    } catch (err) { alert('Lỗi tải danh sách truyện!'); }
+                };
+            }
+            if (closeStudioModal) closeStudioModal.onclick = () => studioModal.style.display = 'none';
 
             // --- NOVEL LOGIC ---
             const novelList = document.getElementById('novel-list');
