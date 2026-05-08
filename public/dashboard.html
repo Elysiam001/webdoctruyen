@@ -291,7 +291,7 @@
         </div>
         <div style="display: flex; gap: 20px; align-items: center;">
             <i class="fa-solid fa-bell" style="color: #fff; cursor: pointer;"></i>
-            <div id="user-avatar" style="width: 35px; height: 35px; border-radius: 50%; background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; transition: 0.3s; z-index: 10001; position: relative;">
+            <div id="user-avatar" onclick="toggleDropdown(event)" style="width: 35px; height: 35px; border-radius: 50%; background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; transition: 0.3s; z-index: 10001; position: relative; background-size: cover;">
                 A
             </div>
         </div>
@@ -532,9 +532,26 @@
 
     <script>
         // --- GLOBAL UI ELEMENTS ---
-        let dropdown, profileModal, postNovelModal, studioModal, postChapterModal;
+        let dropdown, profileModal, postNovelModal, studioModal, postChapterModal, avatar;
 
-        // --- GLOBAL STUDIO FUNCTION ---
+        // --- GLOBAL UI FUNCTIONS ---
+        function toggleDropdown(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (!dropdown) return;
+            const isHidden = dropdown.style.display === 'none';
+            dropdown.style.display = isHidden ? 'flex' : 'none';
+            if (avatar) avatar.style.boxShadow = isHidden ? "0 0 15px #00f2ff" : "none";
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            if (dropdown) dropdown.style.display = 'none';
+            if (avatar) avatar.style.boxShadow = "none";
+        });
+
         async function openStudio(e) {
             if (e) {
                 e.preventDefault();
@@ -599,6 +616,7 @@
             postNovelModal = document.getElementById('post-novel-modal');
             studioModal = document.getElementById('studio-modal');
             postChapterModal = document.getElementById('post-chapter-modal');
+            avatar = document.getElementById('user-avatar');
 
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
@@ -607,8 +625,7 @@
             }
 
             // --- UI ELEMENTS ---
-            const avatar = document.getElementById('user-avatar');
-            // (dropdown, profileModal, etc. are now global)
+            // (dropdown, profileModal, avatar, etc. are now global)
             const closeProfile = document.getElementById('close-profile');
             const closePostModal = document.getElementById('close-post-modal');
             const postNovelForm = document.getElementById('post-novel-form');
@@ -661,24 +678,7 @@
                 stats[3].textContent = `${userData.comments} Lần`;
             }
 
-            // --- DROPDOWN LOGIC ---
-            if (avatar && dropdown) {
-                // Ensure initial state
-                dropdown.style.display = 'none';
-                
-                avatar.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const isHidden = dropdown.style.display === 'none';
-                    dropdown.style.display = isHidden ? 'flex' : 'none';
-                    avatar.style.boxShadow = isHidden ? "0 0 15px #00f2ff" : "none";
-                });
-
-                document.addEventListener('click', () => {
-                    dropdown.style.display = 'none';
-                    avatar.style.boxShadow = "none";
-                });
-            }
+            // Modal controls (already global)
 
             // --- MODAL LOGIC ---
             if (closeProfile) closeProfile.onclick = () => profileModal.style.display = 'none';
