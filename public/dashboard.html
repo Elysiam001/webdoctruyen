@@ -250,6 +250,23 @@
             border-radius: 4px;
             border: 1px solid rgba(0, 242, 255, 0.1);
         }
+        .energy-flow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: energy-move 2s infinite linear;
+        }
+        @keyframes energy-move {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
         .lib-avatar {
             width: 50px;
             height: 50px;
@@ -326,13 +343,20 @@
                 
                 <!-- Stats -->
                 <div style="flex: 2; min-width: 300px;">
-                    <div class="profile-stat-item">
-                        <span class="info-label">Tu Vi:</span>
-                        <span style="color: #ffaa00; font-weight: bold; font-family: 'Orbitron', sans-serif;">Đại Độ Kiếp (Tầng 9)</span>
-                        <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; position: relative; overflow: hidden;">
-                            <div style="position: absolute; top: 0; left: 0; width: 85%; height: 100%; background: linear-gradient(90deg, #ffaa00, #fff); box-shadow: 0 0 10px #ffaa00;"></div>
+                    <div class="profile-stat-item" style="position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="info-label">Tu Vi: <span id="tuvi-title" style="color: #ffaa00; font-weight: bold; font-family: 'Orbitron', sans-serif;">Luyện Khí (Tầng 1)</span></span>
+                            <span id="tuvi-exp" style="font-size: 0.7rem; color: var(--primary-cyan); font-family: 'Orbitron', sans-serif;">0 / 100 EXP</span>
                         </div>
-                        <div style="font-size: 0.6rem; color: var(--text-muted); text-align: right; margin-top: 5px;">85% tới Cực Hạn</div>
+                        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                            <div id="tuvi-bar" style="position: absolute; top: 0; left: 0; width: 0%; height: 100%; background: linear-gradient(90deg, #ffaa00, #ffe600); box-shadow: 0 0 15px #ffaa00; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);">
+                                <div class="energy-flow"></div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+                            <span id="tuvi-percent" style="font-size: 0.65rem; color: var(--text-muted);">0% tới Tầng tiếp theo</span>
+                            <span style="font-size: 0.65rem; color: #ffaa00; letter-spacing: 1px; animation: pulse 2s infinite;">ENERGY SYNCING...</span>
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px;">
@@ -481,13 +505,16 @@
             const navAvatar = document.getElementById('user-avatar');
             
             // Update Tuvi
-            const tuviTitle = document.querySelector('.profile-stat-item span:nth-child(2)');
-            const tuviBar = document.querySelector('.profile-stat-item div div');
-            const tuviPercent = document.querySelector('.profile-stat-item div:last-child');
+            const tuviTitle = document.getElementById('tuvi-title');
+            const tuviBar = document.getElementById('tuvi-bar');
+            const tuviPercent = document.getElementById('tuvi-percent');
+            const tuviExp = document.getElementById('tuvi-exp');
             
             tuviTitle.textContent = userData.tuvi || 'Luyện Khí (Tầng 1)';
             tuviBar.style.width = `${userData.tuviProgress || 0}%`;
             tuviPercent.textContent = `${userData.tuviProgress || 0}% tới Tầng tiếp theo`;
+            // Initial EXP display (approximate)
+            tuviExp.textContent = `Hệ thống đang đồng bộ...`;
 
             if (userData.avatar) {
                 profileAvatar.innerHTML = "";
@@ -523,6 +550,7 @@
                         tuviTitle.textContent = result.tuvi;
                         tuviBar.style.width = `${result.tuviProgress}%`;
                         tuviPercent.textContent = `${result.tuviProgress}% tới Tầng tiếp theo`;
+                        tuviExp.textContent = `+10 Linh Lực (Syncing...)`;
                         stats[2].textContent = `${result.readMinutes} Phút`;
                         
                         // Update local storage to keep state
