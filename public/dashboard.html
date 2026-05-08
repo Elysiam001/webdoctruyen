@@ -299,7 +299,7 @@
 
     <!-- User Dropdown Menu -->
     <div id="user-dropdown" class="user-dropdown" style="z-index: 99999; position: fixed; top: 70px; right: 5%; display: none;">
-        <div onclick="profileModal.style.display='flex'; dropdown.style.display='none';" style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
+        <div onclick="document.getElementById('profile-modal').style.display='flex'; document.getElementById('user-dropdown').style.display='none';" style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
             <i class="fa-solid fa-user" style="color: var(--primary-cyan); width: 20px;"></i> Thông tin cá nhân
         </div>
         <div style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
@@ -312,7 +312,7 @@
         <div onclick="openStudio(event)" style="padding: 12px 20px; color: var(--primary-cyan); cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
             <i class="fa-solid fa-book-open" style="width: 20px;"></i> Truyện tôi thầu
         </div>
-        <div onclick="postNovelModal.style.display='flex'; dropdown.style.display='none';" style="padding: 12px 20px; color: #ff4d4d; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;" onmouseover="this.style.background='rgba(255,77,77,0.1)'" onmouseout="this.style.background='transparent'">
+        <div onclick="document.getElementById('post-novel-modal').style.display='flex'; document.getElementById('user-dropdown').style.display='none';" style="padding: 12px 20px; color: #ff4d4d; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;" onmouseover="this.style.background='rgba(255,77,77,0.1)'" onmouseout="this.style.background='transparent'">
             <i class="fa-solid fa-pen-nib" style="width: 20px;"></i> Đăng truyện
         </div>
 
@@ -391,7 +391,7 @@
                 </div>
             </div>
             <div class="alert-footer">
-                <button class="alert-btn" onclick="profileModal.style.display='none'" id="close-profile" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">ĐÓNG HỒ SƠ</button>
+                <button class="alert-btn" onclick="document.getElementById('profile-modal').style.display='none'" id="close-profile" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">ĐÓNG HỒ SƠ</button>
             </div>
         </div>
     </div>
@@ -466,7 +466,7 @@
                 </form>
             </div>
             <div class="alert-footer">
-                <button class="alert-btn" onclick="postNovelModal.style.display='none'" id="close-post-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">HỦY BỎ</button>
+                <button class="alert-btn" onclick="document.getElementById('post-novel-modal').style.display='none'" id="close-post-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">HỦY BỎ</button>
             </div>
         </div>
 
@@ -498,7 +498,7 @@
                 </form>
             </div>
             <div class="alert-footer">
-                <button class="alert-btn" onclick="postChapterModal.style.display='none'" id="close-chapter-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">HỦY BỎ</button>
+                <button class="alert-btn" onclick="document.getElementById('post-chapter-modal').style.display='none'" id="close-chapter-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">HỦY BỎ</button>
             </div>
         </div>
     </div>
@@ -519,7 +519,7 @@
                 </div>
             </div>
             <div class="alert-footer">
-                <button class="alert-btn" onclick="studioModal.style.display='none'" id="close-studio-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">QUAY LẠI</button>
+                <button class="alert-btn" onclick="document.getElementById('studio-modal').style.display='none'" id="close-studio-modal" style="background: rgba(255,255,255,0.1); border: 1px solid #fff; color: #fff;">QUAY LẠI</button>
             </div>
         </div>
     </div>
@@ -603,8 +603,8 @@
 
         function startPostChapter(novelId) {
             document.getElementById('target-novel-id').value = novelId;
-            studioModal.style.display = 'none';
-            postChapterModal.style.display = 'flex';
+            document.getElementById('studio-modal').style.display = 'none';
+            document.getElementById('post-chapter-modal').style.display = 'flex';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
