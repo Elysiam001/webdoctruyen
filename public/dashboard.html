@@ -531,6 +531,9 @@
     </div>
 
     <script>
+        // --- GLOBAL UI ELEMENTS ---
+        let dropdown, profileModal, postNovelModal, studioModal, postChapterModal;
+
         // --- GLOBAL STUDIO FUNCTION ---
         async function openStudio(e) {
             if (e) {
@@ -538,13 +541,11 @@
                 e.stopPropagation();
             }
             
-            const studioModal = document.getElementById('studio-modal');
-            const dropdown = document.getElementById('user-dropdown');
             const myNovelsList = document.getElementById('my-novels-list');
             const userData = JSON.parse(localStorage.getItem('user'));
 
             if (!studioModal || !userData) {
-                alert("Lỗi hệ thống: Không tìm thấy dữ liệu người dùng!");
+                alert("Lỗi hệ thống: Không tìm thấy dữ liệu!");
                 return;
             }
 
@@ -585,12 +586,20 @@
 
         function startPostChapter(novelId) {
             document.getElementById('target-novel-id').value = novelId;
-            document.getElementById('studio-modal').style.display = 'none';
-            document.getElementById('post-chapter-modal').style.display = 'flex';
+            studioModal.style.display = 'none';
+            postChapterModal.style.display = 'flex';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             console.log("TALOS SYSTEM INITIALIZED");
+            
+            // Initialize global elements
+            dropdown = document.getElementById('user-dropdown');
+            profileModal = document.getElementById('profile-modal');
+            postNovelModal = document.getElementById('post-novel-modal');
+            studioModal = document.getElementById('studio-modal');
+            postChapterModal = document.getElementById('post-chapter-modal');
+
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
                 window.location.href = 'index.html';
@@ -599,14 +608,10 @@
 
             // --- UI ELEMENTS ---
             const avatar = document.getElementById('user-avatar');
-            const dropdown = document.getElementById('user-dropdown');
-            const profileModal = document.getElementById('profile-modal');
+            // (dropdown, profileModal, etc. are now global)
             const closeProfile = document.getElementById('close-profile');
-            const postNovelModal = document.getElementById('post-novel-modal');
             const closePostModal = document.getElementById('close-post-modal');
             const postNovelForm = document.getElementById('post-novel-form');
-            const menuProfile = document.getElementById('menu-profile');
-            const menuPostNovel = document.getElementById('menu-post-novel');
             
             const profileAvatar = document.getElementById('profile-avatar');
             const profileAvatarContainer = document.getElementById('profile-avatar-container');
