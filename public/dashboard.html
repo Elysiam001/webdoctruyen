@@ -460,125 +460,15 @@
         </div>
     </div>
 
-    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border);">
-        <div class="nav-logo" style="font-size: 1rem; margin-bottom: 10px;">TALOS_LIBRARY</div>
-        <p style="font-size: 0.7rem; color: var(--text-muted);">© 2024 ENDFIELD INDUSTRIES. NỀN TẢNG ĐỌC TRUYỆN DÀNH CHO QUẢN TRỊ VIÊN.</p>
-    </div>
-
-    <script>
-        // Load real user data from localStorage
-        const userData = JSON.parse(localStorage.getItem('user'));
-        if (!userData) {
-            window.location.href = 'index.html'; // Redirect if not logged in
-        } else {
-            // Update UI with real data
-            document.getElementById('display-name').textContent = userData.username;
-            const profileAvatar = document.getElementById('profile-avatar');
-            const navAvatar = document.getElementById('user-avatar');
-            
-            // Update Tuvi
-            const tuviTitle = document.getElementById('tuvi-title');
-            const tuviBar = document.getElementById('tuvi-bar');
-            const tuviPercent = document.getElementById('tuvi-percent');
-            const tuviExp = document.getElementById('tuvi-exp');
-            
-            tuviTitle.textContent = userData.tuvi || 'Luyện Khí (Tầng 1)';
-            tuviBar.style.width = `${userData.tuviProgress || 0}%`;
-            tuviPercent.textContent = `${userData.tuviProgress || 0}% tới Tầng tiếp theo`;
-            // Initial EXP display (approximate)
-            tuviExp.textContent = `Hệ thống đang đồng bộ...`;
-
-            if (userData.avatar) {
-                profileAvatar.innerHTML = "";
-                profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
-                profileAvatar.style.backgroundColor = "transparent";
-                navAvatar.innerHTML = "";
-                navAvatar.style.backgroundImage = `url('${userData.avatar}')`;
-                navAvatar.style.backgroundSize = "cover";
-                navAvatar.style.backgroundColor = "transparent";
-            } else {
-                profileAvatar.innerHTML = userData.username.charAt(0).toUpperCase();
-                navAvatar.innerHTML = userData.username.charAt(0).toUpperCase();
+    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
             }
 
-            // Update stats
-            const stats = document.querySelectorAll('.mini-stat div:last-child');
-            stats[0].textContent = new Date(userData.createdAt).toLocaleDateString('vi-VN');
-            stats[1].textContent = `${userData.readChapters} Chương`;
-            stats[2].textContent = `${userData.readMinutes} Phút`;
-            stats[3].textContent = `${userData.comments} Lần`;
-
-            // Heartbeat Logic (Every 1 minute)
-            setInterval(async () => {
-                try {
-                    const response = await fetch('/api/heartbeat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: userData.id })
-                    });
-                    const result = await response.json();
-                    if (response.ok) {
-                        // Update UI real-time
-                        tuviTitle.textContent = result.tuvi;
-                        tuviBar.style.width = `${result.tuviProgress}%`;
-                        tuviPercent.textContent = `${result.tuviProgress}% tới Tầng tiếp theo`;
-                        tuviExp.textContent = `+10 Linh Lực (Syncing...)`;
-                        stats[2].textContent = `${result.readMinutes} Phút`;
-                        
-                        // Update local storage to keep state
-                        userData.tuvi = result.tuvi;
-                        userData.tuviProgress = result.tuviProgress;
-                        userData.readMinutes = result.readMinutes;
-                        localStorage.setItem('user', JSON.stringify(userData));
-                    }
-                } catch (err) {
-                    console.error('Lỗi tu luyện:', err);
-                }
-            }, 60000); // 60 seconds
-        }
-
-            // Novel Loading Logic
-            const novelList = document.getElementById('novel-list');
-            
-            async function fetchNovels() {
-                try {
-                    const response = await fetch('/api/novels');
-                    const novels = await response.json();
-                    novelList.innerHTML = "";
-                    
-                    if (novels.length === 0) {
-                        novelList.innerHTML = "<p style='color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 50px;'>Chưa có truyện nào được đăng. Hãy là người đầu tiên!</p>";
-                        return;
-                    }
-
-                    novels.forEach(novel => {
-                        const card = document.createElement('div');
-                        card.className = 'novel-card';
-                        card.innerHTML = `
-                            <div class="novel-cover" style="background-image: url('${novel.cover || 'cover1.png'}');">
-                                <div class="novel-badge">${novel.category.toUpperCase()}</div>
-                            </div>
-                            <div class="novel-info">
-                                <div class="novel-title">${novel.title}</div>
-                                <div class="novel-meta">
-                                    <span><i class="fa-solid fa-user-pen"></i> ${novel.author}</span>
-                                    <span style="color: var(--primary-cyan);">${novel.chapters} Chương</span>
-                                </div>
-                            </div>
-                        `;
-                        card.addEventListener('click', () => {
-                            alert(`Đang mở truyện: ${novel.title}\nMô tả: ${novel.description || 'Không có mô tả.'}`);
-                        });
-                        novelList.appendChild(card);
-                    });
-                } catch (err) {
-                    console.error('Lỗi tải truyện:', err);
-                }
-            }
-
-            fetchNovels();
-
-            // UI Elements
+            // --- UI ELEMENTS ---
             const avatar = document.getElementById('user-avatar');
             const dropdown = document.getElementById('user-dropdown');
             const profileModal = document.getElementById('profile-modal');
@@ -588,49 +478,154 @@
             const postNovelForm = document.getElementById('post-novel-form');
             const menuProfile = document.getElementById('menu-profile');
             const menuPostNovel = document.getElementById('menu-post-novel');
+            
+            const profileAvatar = document.getElementById('profile-avatar');
+            const profileAvatarContainer = document.getElementById('profile-avatar-container');
+            const avatarUpload = document.getElementById('avatar-upload');
+            const displayName = document.getElementById('display-name');
+            
+            const tuviTitle = document.getElementById('tuvi-title');
+            const tuviBar = document.getElementById('tuvi-bar');
+            const tuviPercent = document.getElementById('tuvi-percent');
+            const tuviExp = document.getElementById('tuvi-exp');
+            const stats = document.querySelectorAll('.mini-stat div:last-child');
 
-            // Toggle Dropdown
-            if (avatar && dropdown) {
-                avatar.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isVisible = dropdown.style.display === 'flex';
-                    dropdown.style.display = isVisible ? 'none' : 'flex';
-                });
-                document.addEventListener('click', () => dropdown.style.display = 'none');
+            // --- INITIAL DATA LOAD ---
+            if (displayName) displayName.textContent = userData.username;
+            
+            if (tuviTitle) tuviTitle.textContent = userData.tuvi || 'Luyện Khí (Tầng 1)';
+            if (tuviBar) tuviBar.style.width = `${userData.tuviProgress || 0}%`;
+            if (tuviPercent) tuviPercent.textContent = `${userData.tuviProgress || 0}% tới Tầng tiếp theo`;
+            if (tuviExp) tuviExp.textContent = `Hệ thống đang đồng bộ...`;
+
+            const updateAvatarUI = (url) => {
+                if (profileAvatar) {
+                    profileAvatar.innerHTML = "";
+                    profileAvatar.style.backgroundImage = `url('${url}')`;
+                    profileAvatar.style.backgroundColor = "transparent";
+                }
+                if (avatar) {
+                    avatar.innerHTML = "";
+                    avatar.style.backgroundImage = `url('${url}')`;
+                    avatar.style.backgroundSize = "cover";
+                    avatar.style.backgroundColor = "transparent";
+                }
+            };
+
+            if (userData.avatar) {
+                updateAvatarUI(userData.avatar);
+            } else if (avatar && profileAvatar) {
+                const initial = userData.username.charAt(0).toUpperCase();
+                avatar.innerHTML = initial;
+                profileAvatar.innerHTML = initial;
             }
 
-            // Open Profile
+            if (stats.length >= 4) {
+                stats[0].textContent = new Date(userData.createdAt).toLocaleDateString('vi-VN');
+                stats[1].textContent = `${userData.readChapters} Chương`;
+                stats[2].textContent = `${userData.readMinutes} Phút`;
+                stats[3].textContent = `${userData.comments} Lần`;
+            }
+
+            // --- DROPDOWN LOGIC ---
+            if (avatar && dropdown) {
+                avatar.onclick = (e) => {
+                    e.stopPropagation();
+                    const isHidden = dropdown.style.display === 'none' || dropdown.style.display === '';
+                    dropdown.style.display = isHidden ? 'flex' : 'none';
+                };
+                document.addEventListener('click', () => {
+                    dropdown.style.display = 'none';
+                });
+                dropdown.onclick = (e) => e.stopPropagation();
+            }
+
+            // --- MODAL LOGIC ---
             if (menuProfile) {
-                menuProfile.addEventListener('click', (e) => {
+                menuProfile.onclick = (e) => {
                     e.preventDefault();
                     profileModal.style.display = 'flex';
                     dropdown.style.display = 'none';
-                });
+                };
             }
-            if (closeProfile) {
-                closeProfile.addEventListener('click', () => profileModal.style.display = 'none');
-            }
+            if (closeProfile) closeProfile.onclick = () => profileModal.style.display = 'none';
 
-            // Open Post Novel
             if (menuPostNovel) {
-                menuPostNovel.addEventListener('click', (e) => {
+                menuPostNovel.onclick = (e) => {
                     e.preventDefault();
                     postNovelModal.style.display = 'flex';
                     dropdown.style.display = 'none';
-                });
+                };
             }
-            if (closePostModal) {
-                closePostModal.addEventListener('click', () => postNovelModal.style.display = 'none');
-            }
+            if (closePostModal) closePostModal.onclick = () => postNovelModal.style.display = 'none';
 
-            // Handle Post Novel Form
+            // --- HEARTBEAT ---
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/api/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: userData.id })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        if (tuviTitle) tuviTitle.textContent = result.tuvi;
+                        if (tuviBar) tuviBar.style.width = `${result.tuviProgress}%`;
+                        if (tuviPercent) tuviPercent.textContent = `${result.tuviProgress}% tới Tầng tiếp theo`;
+                        if (tuviExp) tuviExp.textContent = `+10 Linh Lực (Syncing...)`;
+                        if (stats[2]) stats[2].textContent = `${result.readMinutes} Phút`;
+                        
+                        userData.tuvi = result.tuvi;
+                        userData.tuviProgress = result.tuviProgress;
+                        userData.readMinutes = result.readMinutes;
+                        localStorage.setItem('user', JSON.stringify(userData));
+                    }
+                } catch (err) {
+                    console.error('Tu luyện gián đoạn:', err);
+                }
+            }, 60000);
+
+            // --- NOVEL LOGIC ---
+            const novelList = document.getElementById('novel-list');
+            async function fetchNovels() {
+                try {
+                    const response = await fetch('/api/novels');
+                    const novels = await response.json();
+                    if (novelList) {
+                        novelList.innerHTML = "";
+                        if (novels.length === 0) {
+                            novelList.innerHTML = "<p style='color: var(--text-muted); grid-column: 1/-1; text-align: center; padding: 50px;'>Chưa có truyện nào. Hãy đăng bộ đầu tiên!</p>";
+                            return;
+                        }
+                        novels.forEach(novel => {
+                            const card = document.createElement('div');
+                            card.className = 'novel-card';
+                            card.innerHTML = `
+                                <div class="novel-cover" style="background-image: url('${novel.cover || 'cover1.png'}');">
+                                    <div class="novel-badge">${novel.category.toUpperCase()}</div>
+                                </div>
+                                <div class="novel-info">
+                                    <div class="novel-title">${novel.title}</div>
+                                    <div class="novel-meta">
+                                        <span><i class="fa-solid fa-user-pen"></i> ${novel.author}</span>
+                                        <span style="color: var(--primary-cyan);">${novel.chapters} Chương</span>
+                                    </div>
+                                </div>
+                            `;
+                            card.onclick = () => alert(`Truyện: ${novel.title}\nMô tả: ${novel.description}`);
+                            novelList.appendChild(card);
+                        });
+                    }
+                } catch (err) { console.error(err); }
+            }
+            fetchNovels();
+
             if (postNovelForm) {
-                postNovelForm.addEventListener('submit', async (e) => {
+                postNovelForm.onsubmit = async (e) => {
                     e.preventDefault();
                     const formData = new FormData(postNovelForm);
                     const data = Object.fromEntries(formData.entries());
                     data.uploaderId = userData.id;
-
                     try {
                         const response = await fetch('/api/novels', {
                             method: 'POST',
@@ -638,65 +633,28 @@
                             body: JSON.stringify(data)
                         });
                         if (response.ok) {
-                            alert('Đăng truyện thành công!');
+                            alert('Đăng thành công!');
                             postNovelModal.style.display = 'none';
                             postNovelForm.reset();
                             fetchNovels();
                         }
-                    } catch (err) {
-                        alert('Lỗi kết nối!');
-                    }
-                });
+                    } catch (err) { alert('Lỗi kết nối!'); }
+                };
             }
 
-            // Name Editing
-            const editNameBtn = document.getElementById('edit-name-btn');
-            const nameEditBox = document.getElementById('name-edit-box');
-            const displayName = document.getElementById('display-name');
-            const nameInput = document.getElementById('name-input');
-            const saveNameBtn = document.getElementById('save-name-btn');
-
-            if (editNameBtn && saveNameBtn) {
-                editNameBtn.addEventListener('click', () => {
-                    nameEditBox.style.display = 'block';
-                    nameInput.value = displayName.textContent;
-                    displayName.style.display = 'none';
-                    editNameBtn.style.display = 'none';
-                });
-
-                saveNameBtn.addEventListener('click', () => {
-                    displayName.textContent = nameInput.value || displayName.textContent;
-                    nameEditBox.style.display = 'none';
-                    displayName.style.display = 'inline';
-                    editNameBtn.style.display = 'inline';
-                });
-            }
-
-            // Avatar Upload
-            const avatarUpload = document.getElementById('avatar-upload');
-            const profileAvatar = document.getElementById('profile-avatar');
-            const profileAvatarContainer = document.getElementById('profile-avatar-container');
-            
+            // --- AVATAR UPLOAD ---
             if (profileAvatarContainer && avatarUpload) {
-                profileAvatarContainer.addEventListener('click', () => avatarUpload.click());
-                
-                avatarUpload.addEventListener('change', (e) => {
+                profileAvatarContainer.onclick = () => avatarUpload.click();
+                avatarUpload.onchange = (e) => {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            const url = ev.target.result;
-                            profileAvatar.style.backgroundImage = `url('${url}')`;
-                            profileAvatar.innerHTML = "";
-                            avatar.style.backgroundImage = `url('${url}')`;
-                            avatar.style.backgroundSize = "cover";
-                            avatar.innerHTML = "";
-                        };
+                        reader.onload = (ev) => updateAvatarUI(ev.target.result);
                         reader.readAsDataURL(file);
                     }
-                });
+                };
             }
-        }
+        });
     </script>
 </body>
 </html>
