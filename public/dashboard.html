@@ -724,6 +724,7 @@
                     e.preventDefault();
                     const formData = new FormData(postChapterForm);
                     const data = Object.fromEntries(formData.entries());
+                    data.userId = userData.id; // Send user ID for security check
                     // NovelId is already in the hidden input
                     try {
                         const response = await fetch('/api/chapters', {
@@ -736,6 +737,9 @@
                             postChapterModal.style.display = 'none';
                             postChapterForm.reset();
                             fetchNovels(); // Refresh chapter count
+                        } else {
+                            const result = await response.json();
+                            alert(result.message || 'Lỗi khi đăng chương!');
                         }
                     } catch (err) { alert('Lỗi kết nối!'); }
                 };

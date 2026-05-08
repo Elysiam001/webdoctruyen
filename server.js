@@ -207,7 +207,16 @@ app.get('/api/novels', async (req, res) => {
 // Post Chapter
 app.post('/api/chapters', async (req, res) => {
     try {
-        const { novelId, title, content, chapterNumber } = req.body;
+        const { novelId, title, content, chapterNumber, userId } = req.body;
+        
+        // Security Check: Verify uploader
+        const novel = await Novel.findById(novelId);
+        if (!novel) return res.status(404).json({ message: 'Không tìm thấy truyện!' });
+        
+        if (novel.uploaderId !== userId) {
+            return res.status(403).json({ message: 'Bạn không có quyền đăng chương cho truyện này!' });
+        }
+
         const newChapter = new Chapter({ novelId, title, content, chapterNumber });
         await newChapter.save();
 
