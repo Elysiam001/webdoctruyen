@@ -647,20 +647,24 @@
                             const card = document.createElement('div');
                             card.className = 'novel-card';
                             
-                            // Debug: Kiểm tra ID (Chỉ hiện trong F12 Console)
                             const myId = userData.id || userData._id;
-                            const uploaderId = novel.uploaderId;
-                            
-                            // Check Author logic (ID match OR Username match as fallback)
-                            const isAuthor = (myId && uploaderId && String(myId) === String(uploaderId)) || 
+                            const isAuthor = (myId && novel.uploaderId && String(myId) === String(novel.uploaderId)) || 
                                            (userData.username === novel.author);
                             
-                            if (isAuthor) console.log(`Nhận diện Tác giả: ${novel.title}`);
+                            // Kiểm tra tiến độ đọc từ localStorage
+                            const progress = localStorage.getItem(`read_progress_${novel._id}`);
+                            const buttonText = progress ? 'ĐỌC TIẾP' : 'BẮT ĐẦU ĐỌC';
+                            const buttonColor = progress ? 'var(--primary-cyan)' : 'var(--primary-cyan)';
 
                             card.innerHTML = `
                                 <div class="novel-cover" style="background-image: url('${novel.cover || 'cover1.png'}');">
                                     <div class="novel-badge">${novel.category.toUpperCase()}</div>
-                                    ${isAuthor ? '<div class="author-badge" style="position: absolute; bottom: 10px; left: 10px; background: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; font-weight: bold; z-index: 10; border: 1px solid #fff;">TÁC GIẢ</div>' : ''}
+                                    ${isAuthor ? `
+                                        <div class="author-badge" style="position: absolute; bottom: 10px; left: 10px; background: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; font-weight: bold; z-index: 10; border: 1px solid #fff;">TÁC GIẢ</div>
+                                        <div class="add-chapter-icon" title="Thêm chương mới" style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--primary-cyan); z-index: 20;">
+                                            <i class="fa-solid fa-pen-nib"></i>
+                                        </div>
+                                    ` : ''}
                                 </div>
                                 <div class="novel-info">
                                     <div class="novel-title">${novel.title}</div>
@@ -668,31 +672,43 @@
                                         <span><i class="fa-solid fa-user-pen"></i> ${novel.author}</span>
                                         <span style="color: var(--primary-cyan);">${novel.chapters} Chương</span>
                                     </div>
-                                    ${isAuthor ? `<button class="alert-btn add-chapter-btn" style="width: 100%; margin-top: 10px; font-size: 0.7rem; padding: 10px; background: #ff4d4d; border: 1px solid #fff; cursor: pointer; color: #fff; font-weight: bold; text-shadow: 0 0 5px #000;">THÊM CHƯƠNG MỚI</button>` : ''}
+                                    <button class="alert-btn read-btn" style="width: 100%; margin-top: 10px; font-size: 0.75rem; padding: 10px; background: transparent; border: 1px solid var(--primary-cyan); color: var(--primary-cyan); cursor: pointer; font-weight: bold; transition: 0.3s;">
+                                        <i class="fa-solid fa-book-open"></i> ${buttonText}
+                                    </button>
                                 </div>
                             `;
 
-                            // Add Chapter Button Click
-                            const addBtn = card.querySelector('.add-chapter-btn');
-                            if (addBtn) {
-                                addBtn.addEventListener('click', (e) => {
-                                    e.preventDefault();
+                            // Author Add Chapter Icon Click
+                            const addIcon = card.querySelector('.add-chapter-icon');
+                            if (addIcon) {
+                                addIcon.onclick = (e) => {
                                     e.stopPropagation();
-                                    console.log("Opening chapter modal for:", novel.title);
                                     document.getElementById('target-novel-id').value = novel._id;
-                                    const modal = document.getElementById('post-chapter-modal');
-                                    if (modal) modal.style.display = 'flex';
-                                });
+                                    document.getElementById('post-chapter-modal').style.display = 'flex';
+                                };
                             }
 
-                            card.onclick = async () => {
+                            // Read Button Click
+                            const readBtn = card.querySelector('.read-btn');
+                            readBtn.onclick = async (e) => {
+                                e.stopPropagation();
                                 try {
                                     const res = await fetch(`/api/novels/${novel._id}/chapters`);
                                     const chapters = await res.json();
-                                    let chapterList = chapters.map(c => `C${c.chapterNumber}: ${c.title}`).join('\n');
-                                    alert(`Truyện: ${novel.title}\n\nDANH SÁCH CHƯƠNG:\n${chapterList || 'Chưa có chương nào.'}\n\n(Hệ thống đang hoàn thiện...)`);
-                                } catch (err) { alert('Không thể lấy danh sách chương'); }
+                                    if (chapters.length === 0) {
+                                        alert('Truyện này chưa có chương nào để đọc!');
+                                        return;
+                                    }
+                                    
+                                    // Lưu tiến độ đọc giả lập
+                                    localStorage.setItem(`read_progress_${novel._id}`, chapters[0]._id);
+                                    
+                                    alert(`Đang mở: ${chapters[0].title}\n\nNỘI DUNG:\n${chapters[0].content}\n\n(Hệ thống Reader đang được xây dựng...)`);
+                                    fetchNovels(); // Refresh để đổi nút thành "ĐỌC TIẾP"
+                                } catch (err) { alert('Lỗi tải nội dung'); }
                             };
+
+                            card.onclick = () => readBtn.click();
                             novelList.appendChild(card);
                         });
                     }
