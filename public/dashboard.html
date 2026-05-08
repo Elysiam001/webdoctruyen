@@ -508,9 +508,12 @@
         <div class="alert-box" style="width: 700px; text-align: left; max-height: 80vh; overflow-y: auto;">
             <div class="tech-corner tc-tl"></div>
             <div class="tech-corner tc-br"></div>
-            <div class="alert-header">
-                <i class="fa-solid fa-book-atlas"></i> 
-                <span>TRẠM QUẢN LÝ TÁC GIẢ</span>
+            <div class="alert-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-book-atlas"></i> 
+                    <span>TRẠM QUẢN LÝ TÁC GIẢ</span>
+                </div>
+                <button class="alert-btn" onclick="document.getElementById('post-novel-modal').style.display='flex'; document.getElementById('studio-modal').style.display='none';" style="padding: 5px 15px; font-size: 0.7rem; background: #ff4d4d; border-color: #fff;">+ ĐĂNG TRUYỆN MỚI</button>
             </div>
             <div class="alert-content" style="padding: 20px;">
                 <div id="my-novels-list" style="display: flex; flex-direction: column; gap: 15px;">
