@@ -291,11 +291,11 @@
         </div>
         <div style="display: flex; gap: 20px; align-items: center; position: relative;">
             <i class="fa-solid fa-bell" style="color: #fff; cursor: pointer;"></i>
-            <div id="user-avatar" style="width: 35px; height: 35px; border-radius: 50%; background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; position: relative; transition: 0.3s;">
+            <div id="user-avatar" style="width: 35px; height: 35px; border-radius: 50%; background: var(--primary-cyan); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; cursor: pointer; position: relative; transition: 0.3s; z-index: 1002;">
                 A
             </div>
             <!-- User Dropdown Menu -->
-            <div id="user-dropdown" class="user-dropdown">
+            <div id="user-dropdown" class="user-dropdown" style="display: none; z-index: 9999;">
                 <a href="#" id="menu-profile"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
                 <a href="#"><i class="fa-solid fa-gear"></i> Cài đặt</a>
                 <a href="#"><i class="fa-solid fa-bolt"></i> Thể lực</a>
@@ -529,15 +529,26 @@
 
             // --- DROPDOWN LOGIC ---
             if (avatar && dropdown) {
-                avatar.onclick = (e) => {
+                console.log("Dropdown system initialized"); // Kiểm tra trong Console
+                avatar.addEventListener('click', (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
-                    const isHidden = dropdown.style.display === 'none' || dropdown.style.display === '';
-                    dropdown.style.display = isHidden ? 'flex' : 'none';
-                };
-                document.addEventListener('click', () => {
-                    dropdown.style.display = 'none';
+                    const currentDisplay = dropdown.style.display;
+                    if (currentDisplay === 'none') {
+                        dropdown.style.display = 'flex';
+                        avatar.style.boxShadow = "0 0 15px #00f2ff";
+                    } else {
+                        dropdown.style.display = 'none';
+                        avatar.style.boxShadow = "none";
+                    }
                 });
-                dropdown.onclick = (e) => e.stopPropagation();
+
+                document.addEventListener('click', (e) => {
+                    if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.style.display = 'none';
+                        avatar.style.boxShadow = "none";
+                    }
+                });
             }
 
             // --- MODAL LOGIC ---
