@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true },
     password: { type: String, required: true },
-    tuvi: { type: String, default: 'Luyện Khí (Tầng 1)' },
+    exp: { type: Number, default: 0 },
     avatar: { type: String, default: '' },
     readChapters: { type: Number, default: 0 },
     readMinutes: { type: Number, default: 0 },
@@ -34,6 +34,36 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Cultivation Ranks Helper
+const getRankInfo = (exp) => {
+    const ranks = [
+        "Luyện Khí", "Trúc Cơ", "Kim Đan", "Nguyên Anh", "Hóa Thần", 
+        "Luyện Hư", "Hợp Thể", "Đại Thừa", "Độ Kiếp"
+    ];
+    
+    // Each rank has 9 layers (Tầng)
+    // EXP per layer increases: Rank 0 = 100/layer, Rank 1 = 500/layer, Rank 2 = 2000/layer...
+    const getLayerExp = (rankIdx) => 100 * Math.pow(5, rankIdx);
+    
+    let currentExp = exp;
+    for (let i = 0; i < ranks.length; i++) {
+        const layerExp = getLayerExp(i);
+        const rankTotalExp = layerExp * 9;
+        
+        if (currentExp < rankTotalExp) {
+            const layer = Math.floor(currentExp / layerExp) + 1;
+            const progress = ((currentExp % layerExp) / layerExp) * 100;
+            return {
+                title: `${ranks[i]} (Tầng ${layer})`,
+                progress: progress.toFixed(1),
+                nextExp: layerExp - (currentExp % layerExp)
+            };
+        }
+        currentExp -= rankTotalExp;
+    }
+    return { title: "Chí Tôn (Cực Hạn)", progress: 100, nextExp: 0 };
+};
+
 // --- API Routes ---
 
 // Register
@@ -42,40 +72,39 @@ app.post('/api/register', async (req, res) => {
         let { email, username, password } = req.body;
         email = email.toLowerCase();
         
-        // Check if user exists
         const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) return res.status(400).json({ message: 'Email hoặc Tên đăng nhập đã tồn tại!' });
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
             email,
             username,
-            password: hashedPassword
+            password: hashedPassword,
+            exp: 0 // Start from zero
         });
 
         await newUser.save();
         res.status(201).json({ message: 'Đăng ký thành công!' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server!', error: err.message });
+        res.status(500).json({ message: 'Lỗi server!' });
     }
 });
 
 // Login
 app.post('/api/login', async (req, res) => {
     try {
-        let { email, password } = req.body; // 'email' here could be username or email
+        let { email, password } = req.body;
         const loginQuery = email.includes('@') ? { email: email.toLowerCase() } : { username: email };
         
         const user = await User.findOne(loginQuery);
-        if (!user) return res.status(400).json({ message: 'Tài khoản hoặc Email không tồn tại!' });
+        if (!user) return res.status(400).json({ message: 'Tài khoản không tồn tại!' });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Mật khẩu không chính xác!' });
 
-        // Create Token
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret_key', { expiresIn: '1d' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
+        const rank = getRankInfo(user.exp);
 
         res.json({
             token,
@@ -83,7 +112,8 @@ app.post('/api/login', async (req, res) => {
                 id: user._id,
                 username: user.username,
                 email: user.email,
-                tuvi: user.tuvi,
+                tuvi: rank.title,
+                tuviProgress: rank.progress,
                 avatar: user.avatar,
                 readChapters: user.readChapters,
                 readMinutes: user.readMinutes,
@@ -93,6 +123,30 @@ app.post('/api/login', async (req, res) => {
         });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server!' });
+    }
+});
+
+// Heartbeat - Update EXP & Minutes
+app.post('/api/heartbeat', async (req, res) => {
+    try {
+        const { id } = req.body;
+        // Add 10 exp and 1 minute
+        const user = await User.findByIdAndUpdate(
+            id, 
+            { $inc: { exp: 10, readMinutes: 1 } }, 
+            { new: true }
+        );
+        
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        const rank = getRankInfo(user.exp);
+        res.json({
+            readMinutes: user.readMinutes,
+            tuvi: rank.title,
+            tuviProgress: rank.progress
+        });
+    } catch (err) {
+        res.status(500).json({ message: 'Error' });
     }
 });
 

@@ -480,6 +480,15 @@
             const profileAvatar = document.getElementById('profile-avatar');
             const navAvatar = document.getElementById('user-avatar');
             
+            // Update Tuvi
+            const tuviTitle = document.querySelector('.profile-stat-item span:nth-child(2)');
+            const tuviBar = document.querySelector('.profile-stat-item div div');
+            const tuviPercent = document.querySelector('.profile-stat-item div:last-child');
+            
+            tuviTitle.textContent = userData.tuvi || 'Luyện Khí (Tầng 1)';
+            tuviBar.style.width = `${userData.tuviProgress || 0}%`;
+            tuviPercent.textContent = `${userData.tuviProgress || 0}% tới Tầng tiếp theo`;
+
             if (userData.avatar) {
                 profileAvatar.innerHTML = "";
                 profileAvatar.style.backgroundImage = `url('${userData.avatar}')`;
@@ -494,10 +503,38 @@
             }
 
             // Update stats
-            document.querySelectorAll('.mini-stat div:last-child')[0].textContent = new Date(userData.createdAt).toLocaleDateString('vi-VN');
-            document.querySelectorAll('.mini-stat div:last-child')[1].textContent = `${userData.readChapters} Chương`;
-            document.querySelectorAll('.mini-stat div:last-child')[2].textContent = `${userData.readMinutes} Phút`;
-            document.querySelectorAll('.mini-stat div:last-child')[3].textContent = `${userData.comments} Lần`;
+            const stats = document.querySelectorAll('.mini-stat div:last-child');
+            stats[0].textContent = new Date(userData.createdAt).toLocaleDateString('vi-VN');
+            stats[1].textContent = `${userData.readChapters} Chương`;
+            stats[2].textContent = `${userData.readMinutes} Phút`;
+            stats[3].textContent = `${userData.comments} Lần`;
+
+            // Heartbeat Logic (Every 1 minute)
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/api/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: userData.id })
+                    });
+                    const result = await response.json();
+                    if (response.ok) {
+                        // Update UI real-time
+                        tuviTitle.textContent = result.tuvi;
+                        tuviBar.style.width = `${result.tuviProgress}%`;
+                        tuviPercent.textContent = `${result.tuviProgress}% tới Tầng tiếp theo`;
+                        stats[2].textContent = `${result.readMinutes} Phút`;
+                        
+                        // Update local storage to keep state
+                        userData.tuvi = result.tuvi;
+                        userData.tuviProgress = result.tuviProgress;
+                        userData.readMinutes = result.readMinutes;
+                        localStorage.setItem('user', JSON.stringify(userData));
+                    }
+                } catch (err) {
+                    console.error('Lỗi tu luyện:', err);
+                }
+            }, 60000); // 60 seconds
         }
 
         // Simple interactivity for category buttons
