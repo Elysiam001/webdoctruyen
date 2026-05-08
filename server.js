@@ -49,6 +49,17 @@ const novelSchema = new mongoose.Schema({
 
 const Novel = mongoose.model('Novel', novelSchema);
 
+// Chapter Model
+const chapterSchema = new mongoose.Schema({
+    novelId: { type: mongoose.Schema.Types.ObjectId, ref: 'Novel', required: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    chapterNumber: { type: Number, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Chapter = mongoose.model('Chapter', chapterSchema);
+
 // Cultivation Ranks Helper
 const getRankInfo = (exp) => {
     const ranks = [
@@ -188,6 +199,34 @@ app.get('/api/novels', async (req, res) => {
         res.json(novels);
     } catch (err) {
         res.status(500).json({ message: 'Lỗi khi lấy danh sách truyện!' });
+    }
+});
+
+// --- Chapter Routes ---
+
+// Post Chapter
+app.post('/api/chapters', async (req, res) => {
+    try {
+        const { novelId, title, content, chapterNumber } = req.body;
+        const newChapter = new Chapter({ novelId, title, content, chapterNumber });
+        await newChapter.save();
+
+        // Update chapter count in Novel
+        await Novel.findByIdAndUpdate(novelId, { $inc: { chapters: 1 } });
+
+        res.status(201).json({ message: 'Đăng chương thành công!', chapter: newChapter });
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi khi đăng chương!' });
+    }
+});
+
+// Get Chapters for a Novel
+app.get('/api/novels/:id/chapters', async (req, res) => {
+    try {
+        const chapters = await Chapter.find({ novelId: req.params.id }).sort({ chapterNumber: 1 });
+        res.json(chapters);
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách chương!' });
     }
 });
 

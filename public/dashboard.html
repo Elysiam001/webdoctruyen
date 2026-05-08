@@ -459,6 +459,39 @@
                 <button class="alert-btn" id="close-post-modal" style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">HỦY BỎ</button>
             </div>
         </div>
+
+    <!-- Post Chapter Modal -->
+    <div id="post-chapter-modal" class="alert-overlay" style="display: none;">
+        <div class="alert-box" style="width: 600px; text-align: left;">
+            <div class="tech-corner tc-tl"></div>
+            <div class="tech-corner tc-br"></div>
+            <div class="alert-header">
+                <i class="fa-solid fa-file-pen"></i> 
+                <span>VIẾT CHƯƠNG MỚI</span>
+            </div>
+            <div class="alert-content" style="padding: 20px;">
+                <form id="post-chapter-form">
+                    <input type="hidden" name="novelId" id="target-novel-id">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="info-label">Tên chương</label>
+                        <input type="text" name="title" placeholder="Ví dụ: Chương 1: Sự khởi đầu..." required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); color: #fff; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="info-label">Số thứ tự chương</label>
+                        <input type="number" name="chapterNumber" placeholder="1" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); color: #fff; padding: 10px; border-radius: 4px; margin-top: 5px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label class="info-label">Nội dung chương</label>
+                        <textarea name="content" placeholder="Viết nội dung truyện vào đây..." required style="width: 100%; height: 300px; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); color: #fff; padding: 15px; border-radius: 4px; margin-top: 5px; resize: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6;"></textarea>
+                    </div>
+                    <button type="submit" class="alert-btn" style="width: 100%;">ĐĂNG CHƯƠNG <i class="fa-solid fa-check"></i></button>
+                </form>
+            </div>
+            <div class="alert-footer">
+                <button class="alert-btn" id="close-chapter-modal" style="background: transparent; border: 1px solid rgba(255,255,255,0.2);">HỦY BỎ</button>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border);">
@@ -613,9 +646,14 @@
                         novels.forEach(novel => {
                             const card = document.createElement('div');
                             card.className = 'novel-card';
+                            
+                            // Check if current user is the uploader
+                            const isAuthor = userData.id === novel.uploaderId;
+                            
                             card.innerHTML = `
                                 <div class="novel-cover" style="background-image: url('${novel.cover || 'cover1.png'}');">
                                     <div class="novel-badge">${novel.category.toUpperCase()}</div>
+                                    ${isAuthor ? '<div class="author-badge" style="position: absolute; bottom: 10px; left: 10px; background: #ff4d4d; color: #fff; font-size: 0.6rem; padding: 2px 5px; border-radius: 2px; font-weight: bold;">TÁC GIẢ</div>' : ''}
                                 </div>
                                 <div class="novel-info">
                                     <div class="novel-title">${novel.title}</div>
@@ -623,9 +661,28 @@
                                         <span><i class="fa-solid fa-user-pen"></i> ${novel.author}</span>
                                         <span style="color: var(--primary-cyan);">${novel.chapters} Chương</span>
                                     </div>
+                                    ${isAuthor ? `<button class="alert-btn add-chapter-btn" data-id="${novel._id}" style="width: 100%; margin-top: 10px; font-size: 0.7rem; padding: 5px;">THÊM CHƯƠNG</button>` : ''}
                                 </div>
                             `;
-                            card.onclick = () => alert(`Truyện: ${novel.title}\nMô tả: ${novel.description}`);
+
+                            // Add Chapter Button Click
+                            const addBtn = card.querySelector('.add-chapter-btn');
+                            if (addBtn) {
+                                addBtn.onclick = (e) => {
+                                    e.stopPropagation();
+                                    document.getElementById('target-novel-id').value = novel._id;
+                                    document.getElementById('post-chapter-modal').style.display = 'flex';
+                                };
+                            }
+
+                            card.onclick = async () => {
+                                try {
+                                    const res = await fetch(`/api/novels/${novel._id}/chapters`);
+                                    const chapters = await res.json();
+                                    let chapterList = chapters.map(c => `C${c.chapterNumber}: ${c.title}`).join('\n');
+                                    alert(`Truyện: ${novel.title}\n\nDANH SÁCH CHƯƠNG:\n${chapterList || 'Chưa có chương nào.'}\n\n(Hệ thống đọc truyện đang hoàn thiện...)`);
+                                } catch (err) { alert('Không thể lấy danh sách chương'); }
+                            };
                             novelList.appendChild(card);
                         });
                     }
@@ -650,6 +707,35 @@
                             postNovelModal.style.display = 'none';
                             postNovelForm.reset();
                             fetchNovels();
+                        }
+                    } catch (err) { alert('Lỗi kết nối!'); }
+                };
+            }
+
+            // --- CHAPTER SUBMISSION ---
+            const postChapterModal = document.getElementById('post-chapter-modal');
+            const closeChapterModal = document.getElementById('close-chapter-modal');
+            const postChapterForm = document.getElementById('post-chapter-form');
+
+            if (closeChapterModal) closeChapterModal.onclick = () => postChapterModal.style.display = 'none';
+            
+            if (postChapterForm) {
+                postChapterForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(postChapterForm);
+                    const data = Object.fromEntries(formData.entries());
+                    // NovelId is already in the hidden input
+                    try {
+                        const response = await fetch('/api/chapters', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        if (response.ok) {
+                            alert('Đăng chương thành công!');
+                            postChapterModal.style.display = 'none';
+                            postChapterForm.reset();
+                            fetchNovels(); // Refresh chapter count
                         }
                     } catch (err) { alert('Lỗi kết nối!'); }
                 };
