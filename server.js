@@ -34,6 +34,21 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// Novel Model
+const novelSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    author: { type: String, required: true },
+    category: { type: String, required: true },
+    description: { type: String, default: '' },
+    cover: { type: String, default: 'cover1.png' },
+    chapters: { type: Number, default: 0 },
+    status: { type: String, default: 'Đang ra' },
+    uploaderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Novel = mongoose.model('Novel', novelSchema);
+
 // Cultivation Ranks Helper
 const getRankInfo = (exp) => {
     const ranks = [
@@ -149,6 +164,33 @@ app.post('/api/heartbeat', async (req, res) => {
         res.status(500).json({ message: 'Error' });
     }
 });
+
+// --- Novel Routes ---
+
+// Post Novel
+app.post('/api/novels', async (req, res) => {
+    try {
+        const { title, author, category, description, cover, chapters, status, uploaderId } = req.body;
+        const newNovel = new Novel({
+            title, author, category, description, cover, chapters, status, uploaderId
+        });
+        await newNovel.save();
+        res.status(201).json({ message: 'Đăng truyện thành công!', novel: newNovel });
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi khi đăng truyện!' });
+    }
+});
+
+// Get All Novels
+app.get('/api/novels', async (req, res) => {
+    try {
+        const novels = await Novel.find().sort({ createdAt: -1 });
+        res.json(novels);
+    } catch (err) {
+        res.status(500).json({ message: 'Lỗi khi lấy danh sách truyện!' });
+    }
+});
+
 
 // Update Profile
 app.post('/api/update-profile', async (req, res) => {
