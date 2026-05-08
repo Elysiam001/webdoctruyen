@@ -296,7 +296,7 @@
             </div>
             <!-- User Dropdown Menu -->
             <div id="user-dropdown" class="user-dropdown">
-                <a href="#"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
+                <a href="#" id="menu-profile"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
                 <a href="#"><i class="fa-solid fa-gear"></i> Cài đặt</a>
                 <a href="#"><i class="fa-solid fa-bolt"></i> Thể lực</a>
                 <a href="index.html" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
@@ -305,7 +305,7 @@
                 <a href="#"><i class="fa-solid fa-history"></i> Truyện đã đọc</a>
                 <a href="#"><i class="fa-solid fa-eye"></i> Truyện theo dõi</a>
                 <a href="#" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;"><i class="fa-solid fa-book-open"></i> Truyện tôi thầu</a>
-                <a href="#" style="color: #ff4d4d; font-weight: bold;"><i class="fa-solid fa-pen-nib"></i> Đăng truyện</a>
+                <a href="#" id="menu-post-novel" style="color: #ff4d4d; font-weight: bold;"><i class="fa-solid fa-pen-nib"></i> Đăng truyện</a>
             </div>
         </div>
     </nav>
@@ -586,52 +586,68 @@
             const postNovelModal = document.getElementById('post-novel-modal');
             const closePostModal = document.getElementById('close-post-modal');
             const postNovelForm = document.getElementById('post-novel-form');
+            const menuProfile = document.getElementById('menu-profile');
+            const menuPostNovel = document.getElementById('menu-post-novel');
 
             // Toggle Dropdown
-            avatar.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-            });
-
-            document.addEventListener('click', () => dropdown.style.display = 'none');
+            if (avatar && dropdown) {
+                avatar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isVisible = dropdown.style.display === 'flex';
+                    dropdown.style.display = isVisible ? 'none' : 'flex';
+                });
+                document.addEventListener('click', () => dropdown.style.display = 'none');
+            }
 
             // Open Profile
-            dropdown.querySelector('a:first-child').addEventListener('click', (e) => {
-                e.preventDefault();
-                profileModal.style.display = 'flex';
-            });
-            closeProfile.addEventListener('click', () => profileModal.style.display = 'none');
+            if (menuProfile) {
+                menuProfile.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    profileModal.style.display = 'flex';
+                    dropdown.style.display = 'none';
+                });
+            }
+            if (closeProfile) {
+                closeProfile.addEventListener('click', () => profileModal.style.display = 'none');
+            }
 
             // Open Post Novel
-            dropdown.querySelector('a[href="#"]:last-child').addEventListener('click', (e) => {
-                e.preventDefault();
-                postNovelModal.style.display = 'flex';
-            });
-            closePostModal.addEventListener('click', () => postNovelModal.style.display = 'none');
+            if (menuPostNovel) {
+                menuPostNovel.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    postNovelModal.style.display = 'flex';
+                    dropdown.style.display = 'none';
+                });
+            }
+            if (closePostModal) {
+                closePostModal.addEventListener('click', () => postNovelModal.style.display = 'none');
+            }
 
             // Handle Post Novel Form
-            postNovelForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(postNovelForm);
-                const data = Object.fromEntries(formData.entries());
-                data.uploaderId = userData.id;
+            if (postNovelForm) {
+                postNovelForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(postNovelForm);
+                    const data = Object.fromEntries(formData.entries());
+                    data.uploaderId = userData.id;
 
-                try {
-                    const response = await fetch('/api/novels', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    if (response.ok) {
-                        alert('Đăng truyện thành công!');
-                        postNovelModal.style.display = 'none';
-                        postNovelForm.reset();
-                        fetchNovels();
+                    try {
+                        const response = await fetch('/api/novels', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        if (response.ok) {
+                            alert('Đăng truyện thành công!');
+                            postNovelModal.style.display = 'none';
+                            postNovelForm.reset();
+                            fetchNovels();
+                        }
+                    } catch (err) {
+                        alert('Lỗi kết nối!');
                     }
-                } catch (err) {
-                    alert('Lỗi kết nối!');
-                }
-            });
+                });
+            }
 
             // Name Editing
             const editNameBtn = document.getElementById('edit-name-btn');
@@ -640,40 +656,46 @@
             const nameInput = document.getElementById('name-input');
             const saveNameBtn = document.getElementById('save-name-btn');
 
-            editNameBtn.addEventListener('click', () => {
-                nameEditBox.style.display = 'block';
-                nameInput.value = displayName.textContent;
-                displayName.style.display = 'none';
-                editNameBtn.style.display = 'none';
-            });
+            if (editNameBtn && saveNameBtn) {
+                editNameBtn.addEventListener('click', () => {
+                    nameEditBox.style.display = 'block';
+                    nameInput.value = displayName.textContent;
+                    displayName.style.display = 'none';
+                    editNameBtn.style.display = 'none';
+                });
 
-            saveNameBtn.addEventListener('click', () => {
-                displayName.textContent = nameInput.value || displayName.textContent;
-                nameEditBox.style.display = 'none';
-                displayName.style.display = 'inline';
-                editNameBtn.style.display = 'inline';
-            });
+                saveNameBtn.addEventListener('click', () => {
+                    displayName.textContent = nameInput.value || displayName.textContent;
+                    nameEditBox.style.display = 'none';
+                    displayName.style.display = 'inline';
+                    editNameBtn.style.display = 'inline';
+                });
+            }
 
             // Avatar Upload
             const avatarUpload = document.getElementById('avatar-upload');
             const profileAvatar = document.getElementById('profile-avatar');
-            document.getElementById('profile-avatar-container').addEventListener('click', () => avatarUpload.click());
+            const profileAvatarContainer = document.getElementById('profile-avatar-container');
             
-            avatarUpload.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        const url = ev.target.result;
-                        profileAvatar.style.backgroundImage = `url('${url}')`;
-                        profileAvatar.innerHTML = "";
-                        avatar.style.backgroundImage = `url('${url}')`;
-                        avatar.style.backgroundSize = "cover";
-                        avatar.innerHTML = "";
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+            if (profileAvatarContainer && avatarUpload) {
+                profileAvatarContainer.addEventListener('click', () => avatarUpload.click());
+                
+                avatarUpload.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const url = ev.target.result;
+                            profileAvatar.style.backgroundImage = `url('${url}')`;
+                            profileAvatar.innerHTML = "";
+                            avatar.style.backgroundImage = `url('${url}')`;
+                            avatar.style.backgroundSize = "cover";
+                            avatar.innerHTML = "";
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         }
     </script>
 </body>
