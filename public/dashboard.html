@@ -297,18 +297,28 @@
         </div>
     </nav>
 
-    <!-- User Dropdown Menu (Moved out for visibility) -->
-    <div id="user-dropdown" class="user-dropdown" style="z-index: 99999; position: fixed; top: 70px; right: 5%;">
-        <a href="#" id="menu-profile"><i class="fa-solid fa-user"></i> Thông tin cá nhân</a>
-        <a href="#"><i class="fa-solid fa-gear"></i> Cài đặt</a>
-        <a href="#"><i class="fa-solid fa-bolt"></i> Thể lực</a>
-        <a href="index.html" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
-        <a href="#" style="color: #ff4d4d;"><i class="fa-solid fa-heart"></i> Donate</a>
-        <a href="#"><i class="fa-solid fa-bookmark"></i> Truyện đánh dấu</a>
-        <a href="#"><i class="fa-solid fa-history"></i> Truyện đã đọc</a>
-        <a href="#"><i class="fa-solid fa-eye"></i> Truyện theo dõi</a>
-        <a href="javascript:void(0)" onclick="openStudio(event)" id="menu-my-novels" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; color: var(--primary-cyan);"><i class="fa-solid fa-book-open"></i> Truyện tôi thầu</a>
-        <a href="#" id="menu-post-novel" style="color: #ff4d4d; font-weight: bold;"><i class="fa-solid fa-pen-nib"></i> Đăng truyện</a>
+    <!-- User Dropdown Menu -->
+    <div id="user-dropdown" class="user-dropdown" style="z-index: 99999; position: fixed; top: 70px; right: 5%; display: none;">
+        <div onclick="profileModal.style.display='flex'; dropdown.style.display='none';" style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-user" style="color: var(--primary-cyan); width: 20px;"></i> Thông tin cá nhân
+        </div>
+        <div style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-gear" style="color: var(--primary-cyan); width: 20px;"></i> Cài đặt
+        </div>
+        <div style="padding: 12px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-bolt" style="color: var(--primary-cyan); width: 20px;"></i> Thể lực
+        </div>
+        
+        <div onclick="openStudio(event)" style="padding: 12px 20px; color: var(--primary-cyan); cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold;" onmouseover="this.style.background='rgba(0,242,255,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-book-open" style="width: 20px;"></i> Truyện tôi thầu
+        </div>
+        <div onclick="postNovelModal.style.display='flex'; dropdown.style.display='none';" style="padding: 12px 20px; color: #ff4d4d; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;" onmouseover="this.style.background='rgba(255,77,77,0.1)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-pen-nib" style="width: 20px;"></i> Đăng truyện
+        </div>
+
+        <div onclick="localStorage.removeItem('user'); window.location.href='index.html';" style="padding: 12px 20px; color: #aaa; cursor: pointer; display: flex; align-items: center; gap: 10px;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+            <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i> Đăng xuất
+        </div>
     </div>
 
     <!-- User Profile Modal -->
@@ -666,22 +676,7 @@
             }
 
             // --- MODAL LOGIC ---
-            if (menuProfile) {
-                menuProfile.onclick = (e) => {
-                    if (e) e.preventDefault();
-                    profileModal.style.display = 'flex';
-                    dropdown.style.display = 'none';
-                };
-            }
             if (closeProfile) closeProfile.onclick = () => profileModal.style.display = 'none';
-
-            if (menuPostNovel) {
-                menuPostNovel.onclick = (e) => {
-                    if (e) e.preventDefault();
-                    postNovelModal.style.display = 'flex';
-                    dropdown.style.display = 'none';
-                };
-            }
             if (closePostModal) closePostModal.onclick = () => postNovelModal.style.display = 'none';
 
 
