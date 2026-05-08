@@ -461,8 +461,14 @@
         </div>
     </div>
 
-    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid    <script>
+    <div style="text-align: center; padding: 40px; background: rgba(0,0,0,0.4); border-top: 1px solid var(--glass-border);">
+        <div class="nav-logo" style="font-size: 1rem; margin-bottom: 10px;">TALOS_LIBRARY</div>
+        <p style="font-size: 0.7rem; color: var(--text-muted);">© 2024 ENDFIELD INDUSTRIES. NỀN TẢNG ĐỌC TRUYỆN DÀNH CHO QUẢN TRỊ VIÊN.</p>
+    </div>
+
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("TALOS SYSTEM INITIALIZED");
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
                 window.location.href = 'index.html';
