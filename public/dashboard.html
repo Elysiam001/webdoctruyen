@@ -307,7 +307,7 @@
         <a href="#"><i class="fa-solid fa-bookmark"></i> Truyện đánh dấu</a>
         <a href="#"><i class="fa-solid fa-history"></i> Truyện đã đọc</a>
         <a href="#"><i class="fa-solid fa-eye"></i> Truyện theo dõi</a>
-        <a href="javascript:void(0)" id="menu-my-novels" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; color: var(--primary-cyan);"><i class="fa-solid fa-book-open"></i> Truyện tôi thầu</a>
+        <a href="javascript:void(0)" onclick="openStudio(event)" id="menu-my-novels" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; color: var(--primary-cyan);"><i class="fa-solid fa-book-open"></i> Truyện tôi thầu</a>
         <a href="#" id="menu-post-novel" style="color: #ff4d4d; font-weight: bold;"><i class="fa-solid fa-pen-nib"></i> Đăng truyện</a>
     </div>
 
@@ -521,6 +521,64 @@
     </div>
 
     <script>
+        // --- GLOBAL STUDIO FUNCTION ---
+        async function openStudio(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const studioModal = document.getElementById('studio-modal');
+            const dropdown = document.getElementById('user-dropdown');
+            const myNovelsList = document.getElementById('my-novels-list');
+            const userData = JSON.parse(localStorage.getItem('user'));
+
+            if (!studioModal || !userData) {
+                alert("Lỗi hệ thống: Không tìm thấy dữ liệu người dùng!");
+                return;
+            }
+
+            dropdown.style.display = 'none';
+            studioModal.style.display = 'flex';
+            myNovelsList.innerHTML = "<p style='color: var(--text-muted); text-align: center;'>Đang truy lục kho bản thảo...</p>";
+
+            try {
+                const myId = userData.id || userData._id;
+                const res = await fetch(`/api/my-novels/${myId}`);
+                const novels = await res.json();
+                myNovelsList.innerHTML = "";
+                
+                if (!novels || novels.length === 0) {
+                    myNovelsList.innerHTML = "<p style='color: var(--text-muted); text-align: center;'>Bạn chưa có truyện nào!</p>";
+                    return;
+                }
+
+                novels.forEach(novel => {
+                    const item = document.createElement('div');
+                    item.className = "studio-item";
+                    item.style.cssText = "background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;";
+                    item.innerHTML = `
+                        <div>
+                            <div style="font-weight: bold; color: var(--primary-cyan); font-family: 'Orbitron', sans-serif;">${novel.title}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">
+                                <i class="fa-solid fa-layer-group"></i> ${novel.chapters} Chương
+                            </div>
+                        </div>
+                        <button class="alert-btn" onclick="startPostChapter('${novel._id}')" style="padding: 5px 15px; font-size: 0.7rem;">+ VIẾT CHƯƠNG</button>
+                    `;
+                    myNovelsList.appendChild(item);
+                });
+            } catch (err) {
+                alert("Lỗi tải Studio!");
+            }
+        }
+
+        function startPostChapter(novelId) {
+            document.getElementById('target-novel-id').value = novelId;
+            document.getElementById('studio-modal').style.display = 'none';
+            document.getElementById('post-chapter-modal').style.display = 'flex';
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log("TALOS SYSTEM INITIALIZED");
             const userData = JSON.parse(localStorage.getItem('user'));
@@ -626,62 +684,6 @@
             }
             if (closePostModal) closePostModal.onclick = () => postNovelModal.style.display = 'none';
 
-            // --- STUDIO LOGIC (TRUYỆN TÔI THẦU) ---
-            const menuMyNovels = document.getElementById('menu-my-novels');
-            const studioModal = document.getElementById('studio-modal');
-            const closeStudioModal = document.getElementById('close-studio-modal');
-            const myNovelsList = document.getElementById('my-novels-list');
-
-            if (menuMyNovels) {
-                menuMyNovels.onclick = async (e) => {
-                    if (e) e.preventDefault();
-                    if (e) e.stopPropagation();
-                    console.log("TRẠM TÁC GIẢ KHỞI ĐỘNG...");
-                    
-                    dropdown.style.display = 'none';
-                    studioModal.style.display = 'flex';
-                    myNovelsList.innerHTML = "<p style='color: var(--text-muted); text-align: center;'>Đang truy lục kho bản thảo...</p>";
-                    
-                    try {
-                        const myId = userData.id || userData._id;
-                        const res = await fetch(`/api/my-novels/${myId}`);
-                        const novels = await res.json();
-                        myNovelsList.innerHTML = "";
-                        
-                        if (!novels || novels.length === 0) {
-                            myNovelsList.innerHTML = "<p style='color: var(--text-muted); text-align: center;'>Bạn chưa có truyện nào trong kho!</p>";
-                            return;
-                        }
-
-                        novels.forEach(novel => {
-                            const item = document.createElement('div');
-                            item.style.cssText = "background: rgba(255,255,255,0.05); border: 1px solid rgba(0,242,255,0.2); padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;";
-                            item.innerHTML = `
-                                <div>
-                                    <div style="font-weight: bold; color: var(--primary-cyan); font-family: 'Orbitron', sans-serif;">${novel.title}</div>
-                                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">
-                                        <i class="fa-solid fa-layer-group"></i> ${novel.chapters} Chương | 
-                                        <i class="fa-solid fa-clock"></i> ${new Date(novel.createdAt).toLocaleDateString('vi-VN')}
-                                    </div>
-                                </div>
-                                <button class="alert-btn add-chapter-studio" style="padding: 5px 15px; font-size: 0.7rem;">+ VIẾT CHƯƠNG</button>
-                            `;
-                            
-                            item.querySelector('.add-chapter-studio').onclick = (ev) => {
-                                ev.stopPropagation();
-                                document.getElementById('target-novel-id').value = novel._id;
-                                studioModal.style.display = 'none';
-                                document.getElementById('post-chapter-modal').style.display = 'flex';
-                            };
-                            myNovelsList.appendChild(item);
-                        });
-                    } catch (err) { 
-                        console.error(err);
-                        alert('Lỗi truy cập kho truyện!'); 
-                    }
-                };
-            }
-            if (closeStudioModal) closeStudioModal.onclick = () => studioModal.style.display = 'none';
 
             // --- HEARTBEAT ---
             setInterval(async () => {
